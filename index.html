@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>iframe tester</title>
+    <link rel="stylesheet" href="https://public.codepenassets.com/css/reset-2.0.min.css">
+
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>LODIKO SODONYO - Vinyl Radio Player</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+    :root {
+        --bg-1: #0f172a;
+        --bg-2: #1d3557;
+        --accent: #ff006e;
+        --accent-2: #06d6a0;
+        --text-main: #f9fafb;
+        --text-sub: #e5e7eb;
+        --vinyl-size: 260px;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text-main);
+        background: radial-gradient(circle at top, var(--bg-1) 0, #000 65%);
+        transition: background 1.4s ease;
+        overflow: hidden;
+    }
+
+    .player-wrapper {
+        position: relative;
+        padding: 30px 24px 26px;
+        border-radius: 26px;
+        background: radial-gradient(circle at top, rgba(15,23,42,0.9), rgba(0,0,0,0.96));
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        box-shadow:
+            0 0 40px rgba(0, 0, 0, 0.9),
+            0 0 80px rgba(0, 0, 0, 0.85);
+        display: flex;
+        gap: 32px;
+        align-items: center;
+        backdrop-filter: blur(18px);
+        max-width: 900px;
+        width: min(100% - 32px, 900px);
+    }
+
+    /* Vinyl */
+    .turntable {
+        position: relative;
+        width: calc(var(--vinyl-size) + 50px);
+        height: calc(var(--vinyl-size) + 50px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .vinyl-shadow {
+        position: absolute;
+        inset: 16px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.08), transparent 55%),
+                    radial-gradient(circle at 70% 85%, rgba(0, 0, 0, 0.9), #000 100%);
+        box-shadow:
+            0 30px 60px rgba(0, 0, 0, 0.9),
+            0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .vinyl {
+        position: relative;
+        width: var(--vinyl-size);
+        height: var(--vinyl-size);
+        border-radius: 50%;
+        background:
+            radial-gradient(circle, #222 0%, #000 60%),
+            repeating-radial-gradient(circle, #000 0, #000 2px, #111 3px, #000 4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        box-shadow:
+            0 0 0 3px #020617,
+            0 0 0 6px #020617,
+            0 16px 40px rgba(0, 0, 0, 0.9);
+        /* Vinyl selalu berputar & berdenyut */
+        animation:
+            vinyl-rotate 18s linear infinite,
+            vinyl-pulse 6s ease-in-out infinite;
+    }
+
+    .vinyl::before {
+        content: "";
+        position: absolute;
+        inset: 18%;
+        border-radius: 50%;
+        background: radial-gradient(circle at 30% 10%, rgba(255, 255, 255, 0.05), transparent 60%);
+        mix-blend-mode: screen;
+        pointer-events: none;
+    }
+
+    .vinyl-label {
+        position: relative;
+        width: 56%;
+        height: 56%;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 3px solid rgba(248, 250, 252, 0.9);
+        box-shadow:
+            0 0 0 3px rgba(15, 23, 42, 0.9),
+            0 0 25px rgba(236, 72, 153, 0.9),
+            0 0 40px rgba(56, 189, 248, 0.8);
+        /* Neon selalu berdenyut */
+        animation: neon-pulse 3.6s ease-in-out infinite;
+        z-index: 2;
+        background: #020617;
+    }
+
+    .vinyl-label img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: saturate(1.3) contrast(1.05);
+        transform: scale(1.02);
+        display: block;
+    }
+
+    .vinyl-center {
+        position: absolute;
+        width: 10%;
+        height: 10%;
+        border-radius: 50%;
+        background: radial-gradient(circle, #f9fafb 0, #e5e7eb 45%, #020617 100%);
+        box-shadow: 0 0 8px rgba(15, 23, 42, 0.9);
+        z-index: 3;
+    }
+
+    .neon-ring {
+        position: absolute;
+        width: calc(var(--vinyl-size) + 26px);
+        height: calc(var(--vinyl-size) + 26px);
+        border-radius: 50%;
+        border: 1px solid rgba(244, 114, 182, 0.45);
+        box-shadow:
+            0 0 22px rgba(244, 114, 182, 0.9),
+            0 0 45px rgba(56, 189, 248, 0.75);
+        filter: blur(0.6px);
+        opacity: 0;
+        transform: scale(0.96);
+        pointer-events: none;
+        transition:
+            opacity 0.6s ease,
+            transform 0.6s ease;
+        animation: neon-orbit 7s linear infinite;
+        animation-play-state: paused;
+    }
+
+    .neon-ring.playing {
+        opacity: 1;
+        transform: scale(1);
+        animation-play-state: running;
+    }
+
+    /* Tonearm */
+    .tonearm {
+        position: absolute;
+        right: -22px;
+        top: 16px;
+        width: 120px;
+        height: 180px;
+        pointer-events: none;
+    }
+
+    .tonearm .arm {
+        position: absolute;
+        width: 7px;
+        height: 130px;
+        background: linear-gradient(180deg, #e5e7eb, #9ca3af, #020617);
+        border-radius: 12px;
+        right: 40px;
+        top: 8px;
+        transform-origin: top center;
+        transform: rotate(20deg);
+        transition: transform 0.7s cubic-bezier(0.25, 0.8, 0.3, 1.3);
+        box-shadow: 0 0 10px rgba(148, 163, 184, 0.5);
+    }
+
+    .tonearm .head {
+        position: absolute;
+        bottom: -14px;
+        left: -7px;
+        width: 22px;
+        height: 32px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #020617, #111827);
+        box-shadow:
+            0 0 0 2px #020617,
+            0 6px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .tonearm.playing .arm {
+        transform: rotate(2deg);
+    }
+
+    /* Info */
+    .info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-width: 0;
+    }
+
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, rgba(52, 211, 153, 0.1), rgba(14, 165, 233, 0.15));
+        color: #a5f3fc;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .badge-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow:
+            0 0 10px rgba(22, 163, 74, 0.9),
+            0 0 18px rgba(34, 197, 94, 0.8);
+        animation: live-pulse 1.7s ease-out infinite;
+    }
+
+    .title {
+        font-size: clamp(26px, 3vw, 32px);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #f9fafb;
+        text-shadow:
+            0 0 8px rgba(15, 23, 42, 0.9),
+            0 0 18px rgba(15, 23, 42, 0.95);
+    }
+
+    .subtitle {
+        font-size: 13px;
+        color: var(--text-sub);
+        opacity: 0.9;
+    }
+
+    .meta {
+        margin-top: 4px;
+        font-size: 14px;
+    }
+
+    .track-artist {
+        margin-top: 4px;
+        font-size: 14px;
+        color: #cbd5f5;
+    }
+
+    .track-title {
+        margin-top: 2px;
+        font-size: 15px;
+        color: #e5e7eb;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .controls {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 12px;
+    }
+
+    .btn-play {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        position: relative;
+        background: radial-gradient(circle at 30% 0, #f97316, #ec4899 35%, #6366f1 100%);
+        color: #f9fafb;
+        box-shadow:
+            0 0 20px rgba(244, 114, 182, 0.9),
+            0 0 45px rgba(56, 189, 248, 0.8),
+            0 10px 20px rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition:
+            transform 0.18s ease,
+            box-shadow 0.18s ease,
+            filter 0.18s ease;
+        outline: none;
+    }
+
+    .btn-play::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        border-radius: 50%;
+        border: 1px solid rgba(248, 250, 252, 0.58);
+        opacity: 0.8;
+    }
+
+    .btn-play:hover {
+        transform: translateY(-1px) scale(1.02);
+        filter: brightness(1.03);
+        box-shadow:
+            0 0 26px rgba(244, 114, 182, 1),
+            0 0 55px rgba(56, 189, 248, 0.95),
+            0 16px 32px rgba(0, 0, 0, 0.9);
+    }
+
+    .btn-play:active {
+        transform: translateY(1px) scale(0.98);
+        box-shadow:
+            0 0 18px rgba(244, 114, 182, 0.8),
+            0 0 38px rgba(56, 189, 248, 0.7),
+            0 6px 18px rgba(0, 0, 0, 0.9);
+    }
+
+    .btn-icon {
+        width: 0;
+        height: 0;
+        border-style: solid;
+        margin-left: 4px;
+        transform: translateX(2px);
+    }
+
+    .btn-icon.play {
+        border-width: 11px 0 11px 18px;
+        border-color: transparent transparent transparent #f9fafb;
+    }
+
+    .btn-icon.pause {
+        width: 18px;
+        height: 18px;
+        border: none;
+        display: flex;
+        gap: 4px;
+    }
+
+    .btn-icon.pause span {
+        width: 5px;
+        height: 18px;
+        background: #f9fafb;
+        border-radius: 999px;
+        box-shadow: 0 0 6px rgba(15, 23, 42, 0.7);
+    }
+
+    .status-text {
+        font-size: 12px;
+        color: #9ca3af;
+    }
+
+    .status-dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        margin-right: 6px;
+        background: #22c55e;
+        box-shadow:
+            0 0 8px rgba(22, 163, 74, 0.9),
+            0 0 16px rgba(34, 197, 94, 0.8);
+    }
+
+    .status-text.offline .status-dot {
+        background: #f97316;
+        box-shadow:
+            0 0 8px rgba(248, 113, 113, 0.9),
+            0 0 16px rgba(248, 113, 113, 0.9);
+    }
+
+    /* Animasi */
+    @keyframes vinyl-rotate {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+    }
+
+    @keyframes vinyl-pulse {
+        0%, 100% { transform: scale(1); }
+        50%      { transform: scale(1.015); }
+    }
+
+    @keyframes neon-pulse {
+        0%, 100% {
+            box-shadow:
+                0 0 0 3px rgba(15, 23, 42, 0.9),
+                0 0 20px rgba(236, 72, 153, 0.9),
+                0 0 36px rgba(56, 189, 248, 0.8);
+        }
+        50% {
+            box-shadow:
+                0 0 0 3px rgba(15, 23, 42, 0.9),
+                0 0 34px rgba(251, 113, 133, 1),
+                0 0 60px rgba(59, 130, 246, 0.95);
+        }
+    }
+
+    @keyframes neon-orbit {
+        0% {
+            box-shadow:
+                0 0 22px rgba(244, 114, 182, 0.9),
+                0 0 45px rgba(56, 189, 248, 0.75);
+        }
+        50% {
+            box-shadow:
+                0 0 30px rgba(59, 130, 246, 0.9),
+                0 0 60px rgba(236, 72, 153, 0.95);
+        }
+        100% {
+            box-shadow:
+                0 0 22px rgba(244, 114, 182, 0.9),
+                0 0 45px rgba(56, 189, 248, 0.75);
+        }
+    }
+
+    @keyframes live-pulse {
+        0%   { transform: scale(1); opacity: 1; }
+        50%  { transform: scale(1.35); opacity: 0.3; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 720px) {
+        .player-wrapper {
+            flex-direction: column;
+            padding: 22px 18px 20px;
+            gap: 22px;
+        }
+
+        .turntable {
+            transform: scale(0.92);
+        }
+
+        .title {
+            font-size: 22px;
+        }
+
+        .controls {
+            margin-top: 8px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .turntable {
+            transform: scale(0.8);
+        }
+        .btn-play {
+            width: 58px;
+            height: 58px;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="player-wrapper">
+    <!-- Vinyl -->
+    <div class="turntable">
+        <div class="vinyl-shadow"></div>
+
+        <div class="vinyl" id="vinyl">
+            <div class="vinyl-label" id="vinylLabel">
+                <img id="coverImage"
+                     src="https://www.radioplug.co.uk/img/channel/06-07-2019-08-11-00.png"
+                     alt="Cover LODIKO SODONYO">
+            </div>
+            <div class="vinyl-center"></div>
+        </div>
+
+        <div class="neon-ring" id="neonRing"></div>
+
+        <div class="tonearm" id="tonearm">
+            <div class="arm">
+                <div class="head"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info & Kontrol -->
+    <div class="info">
+        <div class="badge">
+            <span class="badge-dot"></span>
+            LODIKO SODONYO • LIVE STREAM
+        </div>
+
+        <div>
+            <div class="title">LODIKO SODONYO</div>
+            <div class="subtitle">Radio Stream • Vinyl Style Neon Player</div>
+        </div>
+
+        <div class="meta">
+            <div class="track-artist" id="trackArtist">Mengambil metadata artis...</div>
+            <div class="track-title" id="trackTitle">Mengambil judul lagu...</div>
+        </div>
+
+        <div class="controls">
+            <button class="btn-play" id="playPauseBtn" aria-label="Play / Pause">
+                <div class="btn-icon play" id="btnIcon"></div>
+            </button>
+
+            <div>
+                <div class="status-text" id="statusText">
+                    <span class="status-dot"></span>
+                    Siaran langsung tersambung
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="audio" src="https://stream.zeno.fm/nztzeroxluuuv" preload="none"></audio>
+</div>
+
+<script>
+    // Elemen & state
+    const audio       = document.getElementById('audio');
+    const playBtn     = document.getElementById('playPauseBtn');
+    const btnIcon     = document.getElementById('btnIcon');
+    const neonRing    = document.getElementById('neonRing');
+    const tonearm     = document.getElementById('tonearm');
+    const coverImage  = document.getElementById('coverImage');
+    const trackTitle  = document.getElementById('trackTitle');
+    const trackArtist = document.getElementById('trackArtist');
+    const statusText  = document.getElementById('statusText');
+
+    const DEFAULT_COVER = "https://www.radioplug.co.uk/img/channel/06-07-2019-08-11-00.png";
+    let isPlaying = false;
+    let lastStreamTitle = '';
+
+    // Play / Pause
+    function setIconToPlay() {
+        btnIcon.className = 'btn-icon play';
+        btnIcon.innerHTML = '';
+    }
+
+    function setIconToPause() {
+        btnIcon.className = 'btn-icon pause';
+        btnIcon.innerHTML = '<span></span><span></span>';
+    }
+
+    function updateVisualState() {
+        if (isPlaying) {
+            neonRing.classList.add('playing');
+            tonearm.classList.add('playing');
+        } else {
+            neonRing.classList.remove('playing');
+            tonearm.classList.remove('playing');
+        }
+    }
+
+    playBtn.addEventListener('click', async () => {
+        try {
+            if (audio.paused) {
+                await audio.play();
+                isPlaying = true;
+                setIconToPause();
+                statusText.classList.remove('offline');
+                statusText.innerHTML =
+                    '<span class="status-dot"></span>Sedang memutar stream';
+            } else {
+                audio.pause();
+                isPlaying = false;
+                setIconToPlay();
+                statusText.classList.add('offline');
+                statusText.innerHTML =
+                    '<span class="status-dot"></span>Stream dijeda';
+            }
+            updateVisualState();
+        } catch (err) {
+            console.error('Error saat memutar stream:', err);
+            statusText.classList.add('offline');
+            statusText.innerHTML =
+                '<span class="status-dot"></span>Gagal memutar stream (cek CORS / browser)';
+        }
+    });
+
+    audio.addEventListener('playing', () => {
+        isPlaying = true;
+        setIconToPause();
+        updateVisualState();
+    });
+
+    audio.addEventListener('pause', () => {
+        isPlaying = false;
+        setIconToPlay();
+        updateVisualState();
+    });
+
+    audio.addEventListener('error', () => {
+        statusText.classList.add('offline');
+        statusText.innerHTML =
+            '<span class="status-dot"></span>Stream error / tidak tersedia';
+    });
+
+    // Background warna-warni auto 20 detik
+    const bgPalettes = [
+        ['#ff6b6b', '#1a1c4b'], // merah – biru tua
+        ['#f9c74f', '#2d3142'], // kuning – abu gelap
+        ['#00f5d4', '#120817'], // aqua – ungu gelap
+        ['#9b5de5', '#1f102b'], // ungu – hitam keunguan
+        ['#00bbf9', '#071320'], // biru neon – navy
+        ['#ff006e', '#2b1120'], // magenta – merah gelap
+        ['#38b000', '#03130a']  // hijau neon – hijau gelap
+    ];
+    let bgIndex = 0;
+
+    function changeBackground() {
+        const [c1, c2] = bgPalettes[bgIndex];
+        document.body.style.background =
+            `radial-gradient(circle at top, ${c1} 0, ${c2} 35%, #000 78%)`;
+        bgIndex = (bgIndex + 1) % bgPalettes.length;
+    }
+
+    changeBackground();
+    setInterval(changeBackground, 20000);
+
+    // Update teks & cover
+    function updateTrackInfo({ title, artist, cover }) {
+        trackArtist.textContent = artist || 'Artis tidak diketahui';
+        trackTitle.textContent  = title  || 'Judul lagu tidak tersedia';
+        coverImage.src = cover || DEFAULT_COVER;
+    }
+
+    // Pecah "Artist - Title"
+    function parseStreamTitle(streamTitle) {
+        if (!streamTitle || typeof streamTitle !== 'string') {
+            return { artist: '', title: '' };
+        }
+        const parts = streamTitle.split(' - ');
+        if (parts.length >= 2) {
+            return {
+                artist: parts[0].trim(),
+                title: parts.slice(1).join(' - ').trim()
+            };
+        }
+        return { artist: '', title: streamTitle.trim() };
+    }
+
+    // Ambil cover dari iTunes
+    async function fetchCoverFromItunes(artist, album, title) {
+        try {
+            if (!artist && !album && !title) {
+                coverImage.src = DEFAULT_COVER;
+                return;
+            }
+
+            let term = '';
+            if (artist) term += artist + ' ';
+            if (album)  term += album;
+            else if (title) term += title;
+
+            const url = 'https://itunes.apple.com/search?term=' +
+                        encodeURIComponent(term) +
+                        '&entity=song&limit=1';
+
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const data = await res.json();
+
+            if (data.results && data.results.length > 0) {
+                const first = data.results[0];
+                let artUrl =
+                    first.artworkUrl512 ||
+                    first.artworkUrl100 ||
+                    first.artworkUrl60;
+
+                if (artUrl) {
+                    artUrl = artUrl
+                        .replace(/100x100bb/, '600x600bb')
+                        .replace(/60x60bb/, '600x600bb')
+                        .replace(/512x512bb/, '600x600bb');
+
+                    coverImage.src = artUrl;
+                    console.log('Cover found on iTunes:', artUrl);
+                    return;
+                }
+            }
+
+            coverImage.src = DEFAULT_COVER;
+        } catch (err) {
+            console.warn('iTunes cover error:', err);
+            coverImage.src = DEFAULT_COVER;
+        }
+    }
+
+    // SSE: Metadata Zeno.FM
+    (function initMetadata() {
+        const MOUNT_ID = 'rbyfkkararzuv';
+        const url = `https://api.zeno.fm/mounts/metadata/subscribe/${MOUNT_ID}`;
+
+        if (!('EventSource' in window)) {
+            trackTitle.textContent = 'Browser tidak mendukung EventSource (SSE).';
+            trackArtist.textContent = '';
+            return;
+        }
+
+        try {
+            const es = new EventSource(url);
+
+            function handleEvent(event) {
+                let raw = (event.data || '').trim();
+                if (!raw) return;
+
+                console.log('SSE event:', event.type, raw);
+
+                let obj = null;
+
+                // Data dari Zeno seperti:
+                // {'mount':'rbyfkkararzuv','streamTitle':'Tulus - Gajah','streamUrl':'&artist=Tulus&album=Gajah'}
+                if (raw[0] === '{' && raw[raw.length - 1] === '}') {
+                    try {
+                        const fixed = raw.replace(/'/g, '"');
+                        obj = JSON.parse(fixed);
+                    } catch (e) {
+                        console.warn('Gagal parse SSE JSON:', e);
+                    }
+                }
+
+                let streamTitle = '';
+                let streamUrlQuery = '';
+
+                if (obj) {
+                    streamTitle    = obj.streamTitle || obj.StreamTitle || '';
+                    streamUrlQuery = obj.streamUrl   || '';
+                } else {
+                    // fallback: anggap seluruh raw adalah "Artist - Title"
+                    streamTitle = raw;
+                }
+
+                if (!streamTitle) return;
+                if (streamTitle === lastStreamTitle) return; // tidak berubah
+                lastStreamTitle = streamTitle;
+
+                const parsed = parseStreamTitle(streamTitle);
+                updateTrackInfo({ title: parsed.title, artist: parsed.artist });
+
+                // Ambil artist & album dari streamUrl: "&artist=...&album=..."
+                let artistFromUrl = '';
+                let albumFromUrl  = '';
+                if (streamUrlQuery) {
+                    try {
+                        const qs = streamUrlQuery.replace(/^\?/, '').replace(/^&/, '');
+                        const params = new URLSearchParams(qs);
+                        artistFromUrl = params.get('artist') || '';
+                        albumFromUrl  = params.get('album')  || '';
+                    } catch (e) {
+                        console.warn('Gagal parse streamUrl query:', e);
+                    }
+                }
+
+                const artistForCover = artistFromUrl || parsed.artist;
+                const albumForCover  = albumFromUrl  || '';
+
+                // jalankan async tanpa await
+                fetchCoverFromItunes(artistForCover, albumForCover, parsed.title);
+            }
+
+            es.onmessage = handleEvent;
+            es.addEventListener('metadata', handleEvent);
+
+            es.onerror = (err) => {
+                console.warn('EventSource error:', err);
+                // Zeno biasanya auto reconnect
+            };
+        } catch (err) {
+            console.error('Tidak bisa membuka EventSource:', err);
+            trackTitle.textContent  = 'Tidak bisa terhubung ke metadata Zeno.FM';
+            trackArtist.textContent = '';
+        }
+    })();
+</script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
