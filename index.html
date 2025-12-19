@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mekarindah - Vinyl Player</title>
+    <title>Mekarindah - Vinyl Player Original Size</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- STYLING PERSIS DARI SCRIPT MEKARINDAH --- */
         :root { 
-            --neon-color: #ff00ff; /* Default Mekarindah Neon */
+            --neon-color: #ff00ff; 
             --neon-color-dark: #aa00aa; 
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -29,17 +24,6 @@
             overflow: hidden;
         }
 
-        .background-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 100%);
-            pointer-events: none;
-            z-index: 1;
-        }
-
         .player-container {
             position: relative;
             z-index: 10;
@@ -49,6 +33,7 @@
             padding: 20px;
         }
 
+        /* --- UKURAN PERSIS SCRIPT ASLI (320px) --- */
         .vinyl-player {
             position: relative;
             width: 320px;
@@ -63,11 +48,9 @@
             width: 280px;
             height: 280px;
             border-radius: 50%;
-            background: transparent;
             box-shadow: 
                 0 0 30px var(--neon-color),
                 0 0 60px var(--neon-color),
-                0 0 90px var(--neon-color),
                 inset 0 0 30px var(--neon-color);
             animation: neonPulse 2s ease-in-out infinite;
             opacity: 0.6;
@@ -84,58 +67,28 @@
             width: 260px;
             height: 260px;
             border-radius: 50%;
-            background: 
-                repeating-radial-gradient(
-                    circle at center,
-                    #0a0a0a 0px,
-                    #0a0a0a 2px,
-                    #1a1a1a 3px,
-                    #111 4px
-                );
-            box-shadow: 
-                0 0 0 8px #0a0a0a,
-                0 0 0 10px #222,
-                0 8px 25px rgba(0,0,0,0.6);
+            background: repeating-radial-gradient(circle at center, #0a0a0a 0px, #0a0a0a 2px, #1a1a1a 3px, #111 4px);
+            box-shadow: 0 0 0 8px #0a0a0a, 0 0 0 10px #222, 0 8px 25px rgba(0,0,0,0.6);
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 2;
         }
 
-        .vinyl-disc.playing {
-            animation: spin 2.5s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+        .vinyl-disc.playing { animation: spin 2.5s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         .cover-art {
             width: 120px;
             height: 120px;
             border-radius: 50%;
-            background: #333 url('https://mekarindah.netlify.app/img/default.jpg') center/cover no-repeat; 
-            box-shadow: 
-                0 0 0 4px #222,
-                0 0 0 6px #444,
-                inset 0 0 15px rgba(0,0,0,0.6);
+            background: #333 url('https://mekarindah.netlify.app/img/default.jpg') center/cover no-repeat;
             position: relative;
             transition: background-image 0.5s ease;
+            box-shadow: 0 0 0 4px #222, 0 0 0 6px #444;
         }
 
-        .cover-art::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 14px;
-            height: 14px;
-            background: radial-gradient(circle, #555 0%, #222 60%, #000 100%);
-            border-radius: 50%;
-            box-shadow: 0 0 0 2px #333;
-        }
-
+        /* --- TONEARM ORI --- */
         .tonearm {
             position: absolute;
             top: 15px;
@@ -143,124 +96,77 @@
             width: 110px;
             height: 20px;
             transform-origin: right center;
-            transform: rotate(-35deg); 
+            transform: rotate(-35deg);
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 20;
         }
+        .tonearm.playing { transform: rotate(-5deg); }
+        .tonearm-base { position: absolute; right: -8px; top: -12px; width: 35px; height: 35px; background: linear-gradient(145deg, #3a3a3a, #1a1a1a); border-radius: 50%; }
+        .tonearm-arm { position: absolute; right: 8px; top: 6px; width: 90px; height: 6px; background: linear-gradient(to bottom, #777, #333); border-radius: 3px; }
 
-        .tonearm.playing {
-            transform: rotate(-5deg);
-        }
-
-        .tonearm-base {
-            position: absolute;
-            right: -8px;
-            top: -12px;
-            width: 35px;
-            height: 35px;
-            background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-
-        .tonearm-arm {
-            position: absolute;
-            right: 8px;
-            top: 6px;
-            width: 90px;
-            height: 6px;
-            background: linear-gradient(to bottom, #777, #333);
-            border-radius: 3px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-        }
-
-        .tonearm-head {
-            position: absolute;
-            left: -12px;
-            top: -2px;
-            width: 20px;
-            height: 12px;
-            background: linear-gradient(to bottom, #555, #222);
-            border-radius: 2px;
-            transform: rotate(-15deg);
-        }
-
+        /* --- INFO DISPLAY & RUNNING TEXT --- */
         .info-display {
             margin-top: 35px;
             text-align: center;
             color: white;
             width: 100%;
             max-width: 320px;
-            position: relative;
         }
 
-        .station-name {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-shadow: 0 0 20px var(--neon-color);
-            margin-bottom: 12px;
-            transition: text-shadow 1s ease;
-        }
-
-        /* --- PERUBAHAN DI SINI: MENGHILANGKAN OUTLINE DAN BLUR --- */
         .now-playing {
             background: rgba(255,255,255,0.05);
-            backdrop-filter: none;
             border-radius: 16px;
             padding: 16px 20px;
             margin-bottom: 20px;
-            border: none; 
-            min-height: 75px;
+            min-height: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-        }
-
-        /* --- START: MARQUEE/TEKS BERJALAN CSS FIX --- */
-        .song-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #fff;
-            margin-bottom: 4px;
-            text-shadow: none; 
-            
-            /* Default non-scrolling state (multi-line supported with ellipsis) */
-            overflow: hidden; 
+            overflow: hidden;
             position: relative;
-            line-height: 1.3;
-            text-overflow: ellipsis; 
-            display: -webkit-box;
-            -webkit-line-clamp: 2; 
-            -webkit-box-orient: vertical;
-            white-space: normal; /* Default: normal wrapping */
         }
 
-        .song-title.scroll {
-            /* Scrolling state (force single line) */
-            white-space: nowrap !important; /* OVERRIDE UNTUK SCROLL */
-            -webkit-line-clamp: unset !important;
-            text-overflow: clip !important;
-            animation: marquee 12s linear infinite;
+        .song-wrapper {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            height: 28px;
         }
 
-        @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
+        .song-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            white-space: nowrap;
+            display: inline-block;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
         }
-        /* --- END: MARQUEE CSS FIX --- */
+
+        /* Logic Running Text */
+        .song-title.marquee {
+            left: 100%;
+            transform: translateX(0);
+            animation: scroll-text 12s linear infinite;
+        }
+
+        @keyframes scroll-text {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-230%); }
+        }
 
         .artist-name {
             font-size: 0.85rem;
-            color: rgba(255,255,255,0.65);
-            text-shadow: none;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
         }
 
+        /* --- CONTROLS --- */
         .controls {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-top: 15px;
         }
 
         .play-btn {
@@ -272,22 +178,13 @@
             color: white;
             font-size: 1.4rem;
             cursor: pointer;
-            box-shadow: 
-                0 4px 15px rgba(0,0,0,0.3),
-                0 0 25px color-mix(in srgb, var(--neon-color) 50%, transparent);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 20px var(--neon-color);
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: transform 0.3s ease;
         }
-
-        .play-btn:hover {
-            transform: scale(1.08);
-        }
-
-        .play-btn:active {
-            transform: scale(0.95);
-        }
+        .play-btn:hover { transform: scale(1.08); }
 
         .volume-control {
             display: flex;
@@ -296,100 +193,24 @@
             background: rgba(255,255,255,0.08);
             padding: 10px 15px;
             border-radius: 25px;
-            backdrop-filter: blur(10px);
         }
-
-        .volume-control i {
-            color: rgba(255,255,255,0.6);
-            font-size: 0.9rem;
-        }
-
-        .volume-slider {
-            width: 80px;
-            height: 4px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255,255,255,0.25);
-            border-radius: 4px;
-            outline: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            background: var(--neon-color);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 0 8px var(--neon-color);
-        }
+        .volume-slider { width: 80px; accent-color: var(--neon-color); cursor: pointer; }
 
         .status {
-            margin-top: 12px;
+            margin-top: 15px;
             font-size: 0.75rem;
-            color: rgba(255,255,255,0.45);
+            color: rgba(255,255,255,0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 6px;
         }
-
-        .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #555;
-            transition: all 0.3s ease;
-        }
-
-        .status-dot.live {
-            background: #0f0;
-            box-shadow: 0 0 8px #0f0;
-            animation: blink 1.2s ease-in-out infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: var(--neon-color);
-            border-radius: 50%;
-            opacity: 0;
-        }
-        
-        .bar { display: none; } 
-        .loading-overlay { display: none !important; }
-
-        @media (max-width: 400px) {
-            .vinyl-player { width: 260px; height: 260px; }
-            .neon-glow { width: 230px; height: 230px; }
-            .vinyl-disc { width: 210px; height: 210px; }
-            .cover-art { width: 100px; height: 100px; }
-            .tonearm { right: 15px; width: 90px; }
-            .info-display { max-width: 280px; }
-        }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #555; }
+        .status-dot.live { background: #0f0; box-shadow: 0 0 8px #0f0; animation: blink 1.2s infinite; }
+        @keyframes blink { 50% { opacity: 0.4; } }
     </style>
 </head>
 <body>
-    <div class="background-overlay"></div>
-    <div class="particles" id="particles"></div>
-
     <div class="player-container">
         <div class="vinyl-player">
             <div class="neon-glow" id="neonGlow"></div>
@@ -398,24 +219,23 @@
             </div>
             <div class="tonearm" id="tonearm">
                 <div class="tonearm-base"></div>
-                <div class="tonearm-arm">
-                    <div class="tonearm-head"></div>
-                </div>
+                <div class="tonearm-arm"></div>
             </div>
         </div>
 
         <div class="info-display">
-            <h1 class="station-name">🎵 Mekarindah</h1>
+            <h1 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 12px; text-shadow: 0 0 20px var(--neon-color);">🎵 Mekarindah</h1>
             <div class="now-playing">
-                <div class="song-title" id="songTitle">Menghubungkan...</div>
+                <div class="song-wrapper" id="songWrapper">
+                    <div class="song-title" id="songTitle">Menghubungkan...</div>
+                </div>
                 <div class="artist-name" id="artistName">Mohon tunggu</div>
             </div>
 
             <div class="controls">
                 <div class="volume-control">
-                    <i class="fas fa-volume-down" id="volIcon"></i>
+                    <i class="fas fa-volume-down" style="color:rgba(255,255,255,0.5)"></i>
                     <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80">
-                    <i class="fas fa-volume-up"></i>
                 </div>
                 <button class="play-btn" id="playBtn">
                     <i class="fas fa-play" id="playIcon"></i>
@@ -423,39 +243,21 @@
             </div>
 
             <div class="status">
-                <span class="status-dot" id="statusDot"></span>
-                <span id="statusMsg">Klik play untuk mulai</span> 
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusMsg">Siap memutar</span> 
             </div>
         </div>
     </div>
 
-    <audio id="audioPlayer" preload="none" crossorigin="anonymous"></audio>
-
-    <script src="https://cdn.jsdelivr.net/npm/jsmediatags@3.9.5/dist/jsmediatags.min.js"></script>
+    <audio id="audioPlayer" crossorigin="anonymous"></audio>
 
     <script>
-        // ============ CONFIGURATION DARI MEKARINDAH ============
         const CONFIG = {
             idzeno: 'gkvbmtw4kkeuv',
             streamUrl: 'https://stream.zeno.fm/gkvbmtw4kkeuv',
-            defaultCover: 'https://mekarindah.netlify.app/img/default.jpg',
-            updateInterval: 10000
+            defaultCover: 'https://mekarindah.netlify.app/img/default.jpg'
         };
 
-        const ZENO_DEFAULT_COVERS = [
-            'https://zeno.fm/zeno-fm-default-album-art.png',
-            'https://zeno.fm/static/images/zeno-fm-default-album-art.png'
-        ];
-
-        // ============ PROXIES & QORI MAPPING DARI LODIKO ============
-        const PROXY_PREFIXES = [
-            'https://api.allorigins.win/raw?url=',
-            'https://corsproxy.io/?',
-            'https://thingproxy.freeboard.io/fetch/',
-            'weserv:'
-        ];
-        
-        // --- DAFTAR COVER QORI DITAMBAHKAN DI SINI ---
         const RECITER_COVERS = {
             'mishary': 'https://i.ytimg.com/vi/GLMp_EGGLfk/hq720.jpg?sqp=-oaymwExCK4FEIIDSFryq4qpAyMIARUAAIhCGAHwAQH4AdQGgALgA4oCDAgAEAEYciBWKDgwDw==&rs=AOn4CLAa_DZgLB8D4xcMTFPgxpnQghg_sw',
             'abdul': 'https://i.ibb.co/VpQd0zT/abdul-rahman.jpg',
@@ -469,628 +271,105 @@
             'hannan attaki': 'https://i.ibb.co/v3Hw0Bf/hannan-attaki.jpg',
             'muzammil': 'https://i.ibb.co/8Y22K1j/muzammil-hasballah.jpg'
         };
-        // ---------------------------------------------------
 
-        // ============ ELEMEN & STATE ============
         const $ = id => document.getElementById(id);
-        const audioPlayer = $('audioPlayer');
-        const playBtn = $('playBtn');
-        const vinyl = $('vinyl');
-        const tonearm = $('tonearm');
-        const coverArt = $('coverArt');
+        const audio = $('audioPlayer');
         const songTitle = $('songTitle');
-        const artistName = $('artistName');
-        const volumeSlider = $('volumeSlider');
-        const statusMsg = $('statusMsg');
-        const statusDot = $('statusDot');
-        const particlesContainer = $('particles');
-
+        const songWrapper = $('songWrapper');
         let isPlaying = false;
-        let currentSong = '';
-        let currentArtist = '';
-        let currentCover = CONFIG.defaultCover;
-        let lastSuccessfulCoverUrl = CONFIG.defaultCover; 
-        let coverFoundAndLocked = false; 
+        let lastTrack = "";
 
-        // ============ FUNGSI MARQUEE ============
-        function checkIfTextOverflows() {
-            // 1. Reset ke kondisi terpendek (tanpa scroll)
-            songTitle.classList.remove('scroll');
-            
-            // PERBAIKAN PENGUKURAN: Hapus properti pemotong teks agar scrollWidth akurat
-            songTitle.style.whiteSpace = 'nowrap'; // Paksa satu baris
-            songTitle.style.webkitLineClamp = 'unset'; // Hapus pemotongan multi-baris
-            songTitle.style.textOverflow = 'clip'; // Hapus ellipsis
-            songTitle.style.display = 'inline-block'; 
-            
-            // Perhitungan lebar
-            const nowPlayingDiv = songTitle.closest('.now-playing');
-            const containerWidth = nowPlayingDiv.clientWidth - 40; // Area konten
-            
-            // Dapatkan lebar teks aktual (scrollWidth)
+        function updateRunningText() {
+            songTitle.classList.remove('marquee');
+            const containerWidth = songWrapper.offsetWidth;
             const textWidth = songTitle.scrollWidth;
-
             if (textWidth > containerWidth) {
-                // 2. AKTIFKAN Marquee (jika teks lebih lebar dari container)
-                songTitle.classList.add('scroll');
-                
-                // Atur durasi animasi berdasarkan panjang teks
-                const duration = Math.max(10, textWidth / 50) + 's';
-                songTitle.style.animationDuration = duration;
-
-            } else {
-                // 3. JIKA TEKS PENDEK: Kembalikan ke style default (yang bisa multi-baris + ellipsis)
-                songTitle.style.whiteSpace = 'normal'; 
-                songTitle.style.textOverflow = 'ellipsis'; 
-                songTitle.style.webkitLineClamp = '2'; 
-                songTitle.style.display = 'block'; 
-            }
-        }
-        // =======================================================
-        
-        // ============ FUNGSI MEKARINDAH YANG DIPERLUKAN (Particles) ============
-        function createParticles() {
-            for (let i = 0; i < 25; i++) {
-                const p = document.createElement('div');
-                p.className = 'particle';
-                p.style.left = Math.random() * 100 + '%';
-                p.style.bottom = '0'; 
-                particlesContainer.appendChild(p);
+                songTitle.classList.add('marquee');
+                const duration = Math.max(10, textWidth / 40);
+                songTitle.style.animationDuration = duration + 's';
             }
         }
 
-        function animateParticles() {
-            if (!isPlaying) return;
-            const particles = document.querySelectorAll('.particle');
-            const randomParticle = particles[Math.floor(Math.random() * particles.length)];
-            if (randomParticle) {
-                randomParticle.classList.remove('active');
-                void randomParticle.offsetWidth; 
-                randomParticle.style.left = Math.random() * 100 + '%';
-                randomParticle.classList.add('active');
+        function setCover(artist, title) {
+            const fullInfo = (artist + " " + title).toLowerCase();
+            let finalCover = CONFIG.defaultCover;
+            for (const key in RECITER_COVERS) {
+                if (fullInfo.includes(key)) { finalCover = RECITER_COVERS[key]; break; }
             }
-            setTimeout(animateParticles, 200 + Math.random() * 300);
-        }
-
-        // ============ FUNGSI UTAMA METADATA & LOCKING DARI LODIKO ============
-
-        function zeno() {
-            const zurl = `https://zenoplay.zenomedia.com/api/zenofm/nowplaying/${CONFIG.idzeno}/?rand=${Math.random()}`;
-            fetch(zurl)
-                .then(res => res.json())
-                .then(data => {
-                    processNowPlaying(data);
-                })
-                .catch(err => {
-                    console.log('API Error:', err);
-                });
-        }
-
-        let eventSource = null;
-        function trySSE() {
-            if (eventSource) return;
-            try {
-                eventSource = new EventSource(`https://api.zeno.fm/mounts/metadata/subscribe/${CONFIG.idzeno}`);
-                eventSource.onmessage = function(e) {
-                    try {
-                        const data = JSON.parse(e.data);
-                        processNowPlaying(data);
-                    } catch (err) {}
-                };
-                eventSource.onerror = function() {
-                    eventSource.close();
-                    eventSource = null;
-                };
-            } catch (e) {}
-        }
-
-        function processNowPlaying(data) {
-            let title = '';
-            let artist = '';
-            let cover = '';
-            let possibleUrl = '';
-
-            const sources = [
-                data,
-                data?.now_playing,
-                data?.nowplaying,
-                data?.current_track,
-                data?.data,
-                Array.isArray(data) ? data[0] : null
-            ].filter(Boolean);
-
-            for (const src of sources) {
-                if (!title) title = src.title || src.song || src.name || src.streamTitle || src.track || '';
-                if (!artist) artist = src.artist || src.artistName || src.artist_name || '';
-                if (!cover) cover = src.art || src.artwork || src.image || src.cover || src.albumart || src.imageurl || '';
-                if (!possibleUrl) possibleUrl = src.file || src.file_url || src.track_url || src.url || src.stream || '';
-            }
-
-            if (title && title.includes(' - ') && !artist) {
-                const parts = title.split(' - ');
-                artist = parts[0].trim();
-                title = parts.slice(1).join(' - ').trim();
-            }
-
-            const defaultStationName = 'Mekarindah';
-            const normalizedTitle = title.trim().replace(/[^\w\s]/g, '').toLowerCase() || defaultStationName.toLowerCase();
-            const normalizedArtist = artist.trim().replace(/[^\w\s]/g, '').toLowerCase() || '';
-            
-            const isSongChanged = (normalizedTitle !== currentSong.replace(/[^\w\s]/g, '').toLowerCase()) || 
-                                  (normalizedArtist !== currentArtist.replace(/[^\w\s]/g, '').toLowerCase());
-
-            songTitle.textContent = title.trim() || defaultStationName;
-            artistName.textContent = artist.trim() || 'Live Streaming';
-            
-            // Panggil cek Marquee setelah update teks
-            setTimeout(checkIfTextOverflows, 50); 
-
-
-            if (isSongChanged) {
-                currentSong = title.trim() || defaultStationName;
-                currentArtist = artist.trim() || 'Live Streaming';
-                lastSuccessfulCoverUrl = CONFIG.defaultCover; 
-                coverFoundAndLocked = false; 
-
-                const mapped = getMappedCover(title, artist);
-                if (mapped) {
-                    loadCover(mapped, true); 
-                    return;
-                }
-                
-                const isZenoDefaultCover = ZENO_DEFAULT_COVERS.includes(cover);
-
-                if (cover && cover.startsWith('http') && cover !== CONFIG.defaultCover && !isZenoDefaultCover) {
-                    loadCover(cover, true); 
-                    return;
-                }
-
-                if (possibleUrl && possibleUrl.startsWith('http') && possibleUrl.toLowerCase().endsWith('.mp3')) {
-                    statusMsg.textContent = '🔎 Mencoba membaca embedded cover...';
-                    tryReadId3FromUrl(possibleUrl)
-                        .then(found => {
-                            if (!found) {
-                                searchCoverArt(title, artist);
-                            }
-                        })
-                        .catch(() => {
-                            searchCoverArt(title, artist);
-                        });
-                    return;
-                }
-
-                searchCoverArt(title, artist);
-
-            } else {
-                if (coverFoundAndLocked) {
-                    if (coverArt.style.backgroundImage.indexOf(lastSuccessfulCoverUrl.replace(/'/g, '')) === -1) {
-                         loadCover(lastSuccessfulCoverUrl, false); 
-                    }
-                    return;
-                }
-                
-                if (cover && cover.startsWith('http') && cover !== CONFIG.defaultCover && cover !== lastSuccessfulCoverUrl) {
-                    loadCover(cover, true); 
-                    return;
-                }
-
-                if (lastSuccessfulCoverUrl === CONFIG.defaultCover) {
-                }
-            }
-        }
-
-        function getMappedCover(title, artist) {
-            const hay = (artist + ' ' + title).toLowerCase();
-            const keys = Object.keys(RECITER_COVERS).sort((a, b) => b.length - a.length);
-
-            for (const key of keys) {
-                if (hay.includes(key)) return RECITER_COVERS[key];
-            }
-            
-            const artistTokens = artist.toLowerCase().split(/\s+/);
-            for (const t of artistTokens) {
-                if (RECITER_COVERS[t]) return RECITER_COVERS[t];
-            }
-            
-            const titleTokens = title.toLowerCase().split(/\s+/);
-            for (const t of titleTokens) {
-                if (RECITER_COVERS[t]) return RECITER_COVERS[t];
-            }
-
-            return null;
-        }
-
-        function buildWeservUrl(originalUrl) {
-            const withoutProto = originalUrl.replace(/^https?:\/\//i, '');
-            return 'https://images.weserv.nl/?url=' + encodeURIComponent(withoutProto) + '&w=800&fit=contain';
-        }
-
-        async function fetchBlobWithProxies(originalUrl) {
-            try {
-                const r = await fetch(originalUrl);
-                if (r.ok) return await r.blob();
-            } catch (e) {}
-            for (const prefix of PROXY_PREFIXES) {
-                try {
-                    let proxyUrl;
-                    if (prefix === 'weserv:') {
-                        proxyUrl = buildWeservUrl(originalUrl);
-                    } else {
-                        proxyUrl = prefix + encodeURIComponent(originalUrl);
-                    }
-                    const r = await fetch(proxyUrl);
-                    if (r.ok) return await r.blob();
-                } catch (e) { }
-            }
-            throw new Error('Unable to fetch resource via direct or proxy');
-        }
-        
-        async function tryReadId3FromUrl(url) {
-            if (!window.jsmediatags) return false;
-            try {
-                const direct = await new Promise((res) => {
-                    window.jsmediatags.read(url, {
-                        onSuccess: tag => res({ ok: true, tag }),
-                        onError: err => res({ ok: false, err })
-                    });
-                });
-                if (direct.ok) {
-                    const tags = direct.tag.tags || {};
-                    if (tags.picture) {
-                        setCoverFromTag(tags.picture); 
-                        if (tags.title) songTitle.textContent = tags.title;
-                        if (tags.artist) artistName.textContent = tags.artist;
-                        setTimeout(checkIfTextOverflows, 50);
-                        statusMsg.textContent = '';
-                        return true;
-                    }
-                }
-            } catch (e) {}
-            statusMsg.textContent = '🔁 Trying proxy to read embedded tags...';
-            try {
-                const blob = await fetchBlobWithProxies(url);
-                const result = await new Promise((res) => {
-                    window.jsmediatags.read(blob, {
-                        onSuccess: tag => res({ ok: true, tag }),
-                        onError: err => res({ ok: false, err })
-                    });
-                });
-                if (result.ok) {
-                    const tags = result.tag.tags || {};
-                    if (tags.picture) {
-                        setCoverFromTag(tags.picture); 
-                        if (tags.title) songTitle.textContent = tags.title;
-                        if (tags.artist) artistName.textContent = tags.artist;
-                        setTimeout(checkIfTextOverflows, 50);
-                        statusMsg.textContent = '';
-                        return true;
-                    }
-                }
-                statusMsg.textContent = '⚠️ Embedded cover tidak ditemukan di tag.';
-                return false;
-            } catch (err) {
-                statusMsg.textContent = '⚠️ Gagal membaca tag via proxy.';
-                return false;
-            }
-        }
-
-        function setCoverFromTag(picture) {
-            if (!picture) return false;
-            const data = picture.data;
-            const format = picture.format || 'image/jpeg';
-            let base64String = '';
-            for (let i = 0; i < data.length; i++) base64String += String.fromCharCode(data[i]);
-            try {
-                const base64 = `data:${format};base64,${btoa(base64String)}`;
-                coverArt.style.backgroundImage = `url('${base64}')`;
-                currentCover = base64;
-                lastSuccessfulCoverUrl = base64; 
-                coverFoundAndLocked = true;
-                extractAndApplyColors(base64);
-                return true;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        function loadCover(url, shouldLock = false) {
-            if (!url) url = CONFIG.defaultCover;
-            if (coverFoundAndLocked && url === lastSuccessfulCoverUrl) {
-                return;
-            }
-            if (url === currentCover) {
-                return;
-            }
-
-            statusMsg.textContent = '⏳ Loading cover...';
-            
             const img = new Image();
-            img.crossOrigin = 'anonymous';
-            
-            img.onload = function() {
-                coverArt.style.backgroundImage = `url('${url}')`;
-                currentCover = url;
-                extractAndApplyColors(img);
-                statusMsg.textContent = isPlaying ? '▶ Playing' : 'Dijeda';
-                
-                if (shouldLock || url !== CONFIG.defaultCover) {
-                    lastSuccessfulCoverUrl = url; 
-                    coverFoundAndLocked = true;
-                } else {
-                    lastSuccessfulCoverUrl = CONFIG.defaultCover;
-                    coverFoundAndLocked = false; 
-                }
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+                $('coverArt').style.backgroundImage = `url('${finalCover}')`;
+                extractColors(img);
             };
-            img.onerror = async function() {
-                if (url !== CONFIG.defaultCover) {
-                    for (const prefix of PROXY_PREFIXES) {
-                        try {
-                            let proxyUrl;
-                            if (prefix === 'weserv:') {
-                                proxyUrl = buildWeservUrl(url);
-                            } else {
-                                proxyUrl = prefix + encodeURIComponent(url);
-                            }
-                            const imgProxy = new Image();
-                            imgProxy.crossOrigin = 'anonymous';
-                            await new Promise((resolve, reject) => {
-                                imgProxy.onload = resolve;
-                                imgProxy.onerror = reject;
-                                imgProxy.src = proxyUrl;
-                            });
-                            
-                            coverArt.style.backgroundImage = `url('${imgProxy.src}')`;
-                            currentCover = imgProxy.src;
-                            extractAndApplyColors(imgProxy);
-                            statusMsg.textContent = isPlaying ? '▶ Playing' : 'Dijeda';
-                            
-                            lastSuccessfulCoverUrl = imgProxy.src;
-                            coverFoundAndLocked = true; 
-                            return;
-                        } catch (e) { }
-                    }
-                }
-                
-                if (url !== CONFIG.defaultCover) {
-                    lastSuccessfulCoverUrl = CONFIG.defaultCover;
-                    coverFoundAndLocked = false;
-                    loadCover(CONFIG.defaultCover, false);
-                } else {
-                    applyColors(255, 0, 255); 
-                    statusMsg.textContent = isPlaying ? '▶ Playing' : 'Dijeda';
-                }
-            };
-            img.src = url;
+            img.src = finalCover;
         }
 
-        function searchCoverArt(title, artist) {
-            if (coverFoundAndLocked) {
-                loadCover(lastSuccessfulCoverUrl, false); 
-                return;
-            }
-            if (title === 'Mekarindah') {
-                loadCover(CONFIG.defaultCover, false);
-                return;
-            }
-
-            statusMsg.textContent = '🔍 Searching cover...';
-
-            const cleanTitle = title
-                .replace(/\(.*?\)|\[.*?\]/g, '')
-                .replace(/feat\..*/i, '')
-                .replace(/ft\..*/i, '')
-                .trim();
-            const cleanArtist = (artist || '').replace(/\(.*?\)|\[.*?\]/g, '').trim();
-
-            const searchQuery = encodeURIComponent(`${cleanArtist} ${cleanTitle}`);
-
-            fetchiTunesCover(searchQuery)
-                .then(coverUrl => {
-                    if (coverUrl) { loadCover(coverUrl, true); return coverUrl; } 
-                    return fetchDeezerCover(searchQuery);
-                })
-                .then(coverUrl => {
-                    if (coverUrl) loadCover(coverUrl, true);
-                    else {
-                        const mapped = getMappedCover(title, artist);
-                        if (mapped) loadCover(mapped, true); 
-                        else {
-                            lastSuccessfulCoverUrl = CONFIG.defaultCover;
-                            coverFoundAndLocked = false;
-                            loadCover(CONFIG.defaultCover, false);
-                        }
-                    }
-                })
-                .catch(() => {
-                    lastSuccessfulCoverUrl = CONFIG.defaultCover;
-                    coverFoundAndLocked = false;
-                    loadCover(CONFIG.defaultCover, false);
-                });
+        function extractColors(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 10; canvas.height = 10;
+            ctx.drawImage(img, 0, 0, 10, 10);
+            const data = ctx.getImageData(0, 0, 10, 10).data;
+            let r=0, g=0, b=0;
+            for(let i=0; i<data.length; i+=4) { r += data[i]; g += data[i+1]; b += data[i+2]; }
+            const count = data.length/4;
+            applyTheme(Math.round(r/count), Math.round(g/count), Math.round(b/count));
         }
-        
-        function fetchiTunesCover(query) {
-            return fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=1`)
+
+        function applyTheme(r, g, b) {
+            const max = Math.max(r, g, b, 1);
+            const factor = 255 / max;
+            const nr = Math.round(r * factor);
+            const ng = Math.round(g * factor);
+            const nb = Math.round(b * factor);
+            const color = `rgb(${nr},${ng},${nb})`;
+            document.documentElement.style.setProperty('--neon-color', color);
+            document.documentElement.style.setProperty('--neon-color-dark', `rgb(${nr*0.6},${ng*0.6},${nb*0.6})`);
+            document.body.style.background = `linear-gradient(135deg, rgb(${r*0.1},${g*0.1},${b*0.12}), #0a0a0a)`;
+        }
+
+        function updateMetadata() {
+            fetch(`https://zenoplay.zenomedia.com/api/zenofm/nowplaying/${CONFIG.idzeno}/?rand=${Math.random()}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.results && data.results.length > 0) {
-                        let artwork = data.results[0].artworkUrl100;
-                        if (artwork) artwork = artwork.replace('100x100', '600x600');
-                        return artwork || null;
-                    }
-                    return null;
-                })
-                .catch(() => null);
+                    const track = data.title || "Mekarindah Stream";
+                    if (track === lastTrack) return;
+                    lastTrack = track;
+                    const parts = track.split(' - ');
+                    const artist = parts[0] || "Live";
+                    const title = parts[1] || parts[0];
+                    songTitle.textContent = title;
+                    $('artistName').textContent = artist;
+                    setCover(artist, title);
+                    setTimeout(updateRunningText, 500);
+                });
         }
 
-        function fetchDeezerCover(query) {
-            return fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://api.deezer.com/search?q=${query}&limit=1`)}`)
-                .then(res => res.json())
-                .then(response => {
-                    const data = JSON.parse(response.contents);
-                    if (data.data && data.data.length > 0) {
-                        return data.data[0].album?.cover_xl || data.data[0].album?.cover_big;
-                    }
-                    return null;
-                })
-                .catch(() => null);
-        }
-        
-        function extractAndApplyColors(source) {
-            let img;
-            if (typeof source === 'string') { 
-                img = new Image();
-                img.crossOrigin = 'anonymous'; 
-                img.onload = () => processColor(img);
-                img.src = source;
-            } else { 
-                processColor(source);
-            }
-        }
-
-        function processColor(img) {
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                const size = 50;
-                canvas.width = size;
-                canvas.height = size;
-                ctx.drawImage(img, 0, 0, size, size);
-                
-                const imageData = ctx.getImageData(0, 0, size, size).data;
-                const colors = [];
-                
-                for (let i = 0; i < imageData.length; i += 20) {
-                    const r = imageData[i];
-                    const g = imageData[i + 1];
-                    const b = imageData[i + 2];
-                    const brightness = (r + g + b) / 3;
-                    const saturation = Math.max(r, g, b) - Math.min(r, g, b);
-                    if (brightness > 30 && brightness < 220 && saturation > 30) {
-                        colors.push({ r, g, b, saturation });
-                    }
-                }
-                
-                if (colors.length > 0) {
-                    colors.sort((a, b) => b.saturation - a.saturation);
-                    const dominant = colors[0];
-                    const max = Math.max(dominant.r, dominant.g, dominant.b);
-                    const boost = max > 0 ? Math.min(1.8, 220 / max) : 1;
-                    
-                    const r = Math.min(255, Math.round(dominant.r * boost));
-                    const g = Math.min(255, Math.round(dominant.g * boost));
-                    const b = Math.min(255, Math.round(dominant.b * boost));
-                    
-                    applyColors(r, g, b);
-                } else {
-                    applyColors(255, 0, 255);
-                }
-            } catch (e) {
-                applyColors(255, 0, 255);
-            }
-        }
-
-        function applyColors(r, g, b) {
-            const neonColor = `rgb(${r}, ${g}, ${b})`;
-            const neonDark = `rgb(${r * 0.6 | 0}, ${g * 0.6 | 0}, ${b * 0.6 | 0})`;
-            const bg1 = `rgb(${r * 0.1 | 0}, ${g * 0.1 | 0}, ${b * 0.12 | 0})`;
-            const bg2 = `rgb(${r * 0.06 | 0}, ${g * 0.06 | 0}, ${b * 0.08 | 0})`;
-            
-            document.documentElement.style.setProperty('--neon-color', neonColor);
-            document.documentElement.style.setProperty('--neon-color-dark', neonDark);
-            document.body.style.background = `linear-gradient(135deg, ${bg1}, ${bg2})`;
-            
-            document.querySelectorAll('.particle').forEach(p => {
-                p.style.background = neonColor;
-            });
-        }
-
-        function togglePlay() { isPlaying ? pause() : play(); }
-
-        // PERBAIKAN PLAY: Menggunakan async/await untuk penanganan promise play yang lebih stabil
-        async function play() {
-            if (isPlaying) return;
-
-            statusMsg.textContent = 'Menghubungkan...';
-            
-            audioPlayer.src = CONFIG.streamUrl;
-            // Hanya panggil load() jika src berubah, tapi ini dijamin berubah di sini.
-            audioPlayer.load(); 
-
-            try {
-                // Mencoba play secara langsung
-                await audioPlayer.play();
-                
+        $('playBtn').onclick = () => {
+            if (!isPlaying) {
+                audio.src = CONFIG.streamUrl;
+                audio.play();
                 isPlaying = true;
                 $('playIcon').className = 'fas fa-pause';
-                vinyl.classList.add('playing');
-                tonearm.classList.add('playing');
-                statusDot.classList.add('live');
-                statusMsg.textContent = '▶ Playing';
-                animateParticles();
-            } catch (err) {
-                console.error('Play failed (Mungkin diblokir browser):', err);
-                statusMsg.textContent = 'Gagal memutar (Browser memblokir atau masalah stream). Coba lagi.';
-                statusDot.classList.remove('live');
-                // Reset state jika gagal
-                pause(false); 
-            }
-        }
-
-        // PERBAIKAN PAUSE: Tambahkan parameter opsional agar tidak mereset UI saat gagal play
-        function pause(updateUI = true) {
-            audioPlayer.pause();
-            audioPlayer.src = ''; 
-            audioPlayer.load(); 
-            isPlaying = false;
-            
-            if (updateUI) {
+                $('vinyl').classList.add('playing');
+                $('tonearm').classList.add('playing');
+                $('statusDot').classList.add('live');
+                $('statusMsg').textContent = '▶ Playing';
+            } else {
+                audio.pause(); audio.src = ''; isPlaying = false;
                 $('playIcon').className = 'fas fa-play';
-                vinyl.classList.remove('playing');
-                tonearm.classList.remove('playing');
-                statusDot.classList.remove('live');
-                statusMsg.textContent = '⏸ Paused';
+                $('vinyl').classList.remove('playing');
+                $('tonearm').classList.remove('playing');
+                $('statusDot').classList.remove('live');
+                $('statusMsg').textContent = '⏸ Paused';
             }
-        }
+        };
 
-        volumeSlider.addEventListener('input', function() {
-            const vol = this.value / 100;
-            audioPlayer.volume = vol;
-            const icon = $('volIcon');
-            icon.className = vol === 0 ? 'fas fa-volume-mute' : vol < 0.5 ? 'fas fa-volume-down' : 'fas fa-volume-up';
-        });
-
-        audioPlayer.addEventListener('waiting', () => statusMsg.textContent = 'Buffering...');
-        audioPlayer.addEventListener('playing', () => {
-            statusMsg.textContent = '▶ Playing';
-            statusDot.classList.add('live');
-        });
-        audioPlayer.addEventListener('error', () => {
-            statusMsg.textContent = 'Reconnecting...';
-            statusDot.classList.remove('live');
-            if (isPlaying) {
-                // Gunakan setTimeout untuk mencoba play ulang
-                setTimeout(play, 3000);
-            }
-        });
-        
-        window.addEventListener('resize', () => {
-             // Tambahkan delay saat resize
-             setTimeout(checkIfTextOverflows, 100); 
-        });
-
-
-        function init() {
-            createParticles();
-            audioPlayer.volume = 0.8;
-            playBtn.addEventListener('click', togglePlay);
-            loadCover(CONFIG.defaultCover, false);
-            zeno();
-            setInterval(zeno, CONFIG.updateInterval);
-            setTimeout(trySSE, 2000);
-            statusMsg.textContent = 'Ready. Klik play untuk mulai.';
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        $('volumeSlider').oninput = function() { audio.volume = this.value / 100; };
+        updateMetadata();
+        setInterval(updateMetadata, 15000);
+        window.onresize = updateRunningText;
     </script>
 </body>
 </html>
