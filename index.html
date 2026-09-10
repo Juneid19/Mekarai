@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mekarindah — Kiara Radio | Modern Vinyl Player & AUDIAL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#00fff2;
+  --accent2:#0077ff;
+  --bg0:#03040a;
+  --bg1:#080b14;
+  --card-bg:rgba(14,18,32,0.55);
+  --text:#eaf6ff;
+  --muted:#8ea3c2;
+  --danger:#ff3b5c;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Poppins',sans-serif;
+  background:radial-gradient(circle at 20% 10%, #0d1226 0%, var(--bg0) 55%), var(--bg0);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+#particles-bg{position:fixed; inset:0; z-index:0; pointer-events:none;}
+.app{position:relative; z-index:2; max-width:1200px; margin:0 auto; padding:1rem 1.2rem 3rem;}
+
+/* ---------- HEADER ---------- */
+header{
+  display:flex; flex-wrap:wrap; gap:1rem; align-items:center; justify-content:space-between;
+  padding:1rem 0; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:1.5rem;
+}
+.logo{font-family:'Orbitron',sans-serif; font-weight:900; font-size:1.4rem; letter-spacing:2px; color:var(--text);}
+.logo span{display:block; font-family:'Poppins',sans-serif; font-weight:400; font-size:0.65rem; color:var(--accent); letter-spacing:3px; text-shadow:0 0 8px var(--accent);}
+.mode-switch{display:flex; gap:0.4rem; flex-wrap:wrap;}
+.mode-switch button{
+  background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); color:var(--muted);
+  padding:0.45rem 0.9rem; border-radius:20px; font-size:0.75rem; cursor:pointer; transition:.25s;
+}
+.mode-switch button.active, .mode-switch button:hover{
+  color:#000; background:var(--accent); border-color:var(--accent); box-shadow:0 0 15px var(--accent);
+}
+.palette-picker{display:flex; align-items:center; gap:0.5rem; font-size:0.7rem; color:var(--muted);}
+.palette-picker button{
+  width:20px; height:20px; border-radius:50%; border:2px solid rgba(255,255,255,0.3); cursor:pointer;
+}
+.pal-cyan{background:linear-gradient(135deg,#00fff2,#0077ff);}
+.pal-magenta{background:linear-gradient(135deg,#ff00e0,#ff0077);}
+.pal-emerald{background:linear-gradient(135deg,#00ff9d,#00c9a7);}
+.palette-picker label{display:flex; align-items:center; gap:4px; cursor:pointer;}
+
+/* ---------- STAGE ---------- */
+.stage{display:grid; gap:2.2rem; grid-template-columns:1fr; padding:1rem 0 2rem; place-items:center;}
+@media(min-width:960px){
+  .stage.mode-hybrid{grid-template-columns:1fr 1fr; align-items:center;}
+}
+.stage.mode-vinyl .audial-card{display:none;}
+.stage.mode-audial .vinyl-wrap{display:none;}
+.vinyl-wrap, .audial-card{width:100%; display:flex; justify-content:center;}
+
+/* ---------- VINYL TURNTABLE ---------- */
+.turntable{width:min(88vw,420px); aspect-ratio:1/1; position:relative;}
+.plinth{
+  position:relative; width:100%; height:100%; border-radius:24px; padding:24px;
+  background:linear-gradient(145deg,#12141c,#080910);
+  box-shadow:0 25px 60px rgba(0,0,0,.7), inset 0 0 30px rgba(0,0,0,.9), 0 0 40px rgba(0,255,242,0.06);
+}
+.vinyl-disc{
+  position:relative; width:100%; height:100%; border-radius:50%;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 2px, transparent 5px),
+    radial-gradient(circle at 40% 35%, rgba(255,255,255,0.08), transparent 40%),
+    radial-gradient(circle, #0c0c0c 0%, #050505 70%, #000 100%);
+  box-shadow:0 0 40px rgba(0,0,0,.9), inset 0 0 60px rgba(255,255,255,0.02);
+  animation:spin 3s linear infinite; animation-play-state:paused;
+}
+.vinyl-disc.spinning{animation-play-state:running;}
+.vinyl-label{
+  position:absolute; top:29%; left:29%; width:42%; height:42%; border-radius:50%; overflow:hidden;
+  border:3px solid var(--accent); box-shadow:0 0 22px var(--accent), inset 0 0 15px rgba(0,0,0,.6);
+  display:flex; align-items:center; justify-content:center; background:#111;
+}
+.vinyl-label img{width:100%; height:100%; object-fit:cover;}
+.spindle{
+  position:absolute; top:50%; left:50%; width:14px; height:14px; background:#e8e8e8; border-radius:50%;
+  transform:translate(-50%,-50%); box-shadow:0 0 10px #fff, 0 0 20px var(--accent); z-index:3;
+}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+.tonearm{position:absolute; top:-6%; right:-6%; width:48%; height:48%; transform-origin:88% 12%; transform:rotate(-28deg); transition:transform .7s cubic-bezier(.4,1.4,.6,1);}
+.tonearm.active{transform:rotate(8deg);}
+.tonearm-body{position:absolute; top:8%; right:14%; width:9px; height:82%; border-radius:6px; background:linear-gradient(#dcdcdc,#777); box-shadow:0 0 8px rgba(0,0,0,.6);}
+.tonearm-head{position:absolute; bottom:-2%; right:6%; width:26px; height:18px; border-radius:5px; background:#222; box-shadow:0 0 10px rgba(0,0,0,.7);}
+.led{position:absolute; top:6px; left:9px; width:7px; height:7px; border-radius:50%; background:#661111; box-shadow:0 0 6px #661111;}
+.tonearm.active .led{background:var(--accent); box-shadow:0 0 12px var(--accent), 0 0 24px var(--accent);}
+
+/* ---------- AUDIAL CARD ---------- */
+.audial-frame{
+  width:min(88vw,420px); background:var(--card-bg); border:1px solid var(--accent); border-radius:26px;
+  padding:1.5rem; backdrop-filter:blur(14px); box-shadow:0 0 35px rgba(0,255,242,0.25), inset 0 0 30px rgba(255,255,255,0.02);
+  position:relative; overflow:hidden;
+}
+.audial-frame::before{
+  content:''; position:absolute; inset:0; border-radius:26px; padding:1px;
+  background:linear-gradient(135deg,var(--accent),transparent 40%,var(--accent2));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude; opacity:.7; pointer-events:none;
+}
+.live-badge{
+  display:inline-flex; align-items:center; gap:6px; font-size:0.72rem; padding:4px 12px; border-radius:20px;
+  background:rgba(255,40,60,0.12); color:#ff5c73; border:1px solid #ff5c73; margin-bottom:1rem; font-weight:600; letter-spacing:.5px;
+}
+.live-badge .dot{width:8px; height:8px; border-radius:50%; background:#ff2b45; animation:blink 1s infinite;}
+@keyframes blink{50%{opacity:.15;}}
+.conn-status{font-size:0.68rem; color:var(--muted); margin-left:auto;}
+.audial-top{display:flex; align-items:center; margin-bottom:.6rem;}
+.cover-art{width:100%; aspect-ratio:1/1; border-radius:18px; overflow:hidden; box-shadow:0 0 28px var(--accent); margin-bottom:1.1rem; background:#111;}
+.cover-art img{width:100%; height:100%; object-fit:cover;}
+.marquee-wrap{overflow:hidden; white-space:nowrap; position:relative;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
+.marquee{display:inline-block; font-family:'Orbitron',sans-serif; font-size:1.15rem; font-weight:700; color:var(--text); text-shadow:0 0 10px var(--accent); will-change:transform;}
+.marquee-wrap.small{margin-top:.35rem;}
+.marquee-wrap.small .marquee{font-size:0.9rem; font-weight:400; color:var(--muted); text-shadow:none;}
+.badges{display:flex; gap:10px; margin-top:1.2rem; flex-wrap:wrap;}
+.badge{font-size:0.7rem; padding:5px 13px; border-radius:20px; border:1px solid var(--accent2); color:var(--accent2); font-weight:600; transition:.25s;}
+.badge.apple{text-decoration:none; background:var(--accent2); color:#000;}
+.badge.quran{border-color:#00c9a7; color:#00c9a7;}
+.badge.quran-link{text-decoration:none; background:#00c9a7; color:#04221c; border-color:#00c9a7;}
+
+/* ---------- MUROTTAL DIRECT PLAY BANNER ---------- */
+.murottal-banner{
+  display:none; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+  background:linear-gradient(135deg, rgba(0,201,167,0.14), rgba(0,255,242,0.05));
+  border:1px solid #00c9a7; border-radius:20px; padding:1rem 1.3rem; margin-bottom:1.5rem;
+  box-shadow:0 0 20px rgba(0,201,167,0.15);
+}
+.mb-info{display:flex; align-items:center; gap:.8rem;}
+.mb-icon{font-size:1.9rem;}
+.mb-title{font-weight:700; font-size:0.9rem; color:#00e6bd;}
+.mb-sub{font-size:0.72rem; color:var(--muted); margin-top:2px;}
+.mb-actions{display:flex; gap:.6rem; flex-wrap:wrap;}
+.mb-actions button{
+  border:none; border-radius:14px; padding:.55rem 1.1rem; font-size:0.78rem; font-weight:700; cursor:pointer; transition:.2s;
+}
+#playDirectMurottalBtn{background:#00c9a7; color:#04221c;}
+#playDirectMurottalBtn:hover:not(:disabled){box-shadow:0 0 15px #00c9a7; transform:translateY(-1px);}
+#playDirectMurottalBtn:disabled{background:rgba(255,255,255,0.08); color:var(--muted); cursor:not-allowed;}
+#backToLiveBtn{background:#ff3b5c; color:#fff; display:none;}
+#backToLiveBtn:hover{box-shadow:0 0 15px #ff3b5c;}
+
+/* ---------- CONTROLS ---------- */
+.controls-panel{
+  display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:1.4rem;
+  background:var(--card-bg); border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:1.4rem;
+  margin-bottom:1.5rem; backdrop-filter:blur(10px);
+}
+.play-btn{
+  width:66px; height:66px; border-radius:50%; border:none; cursor:pointer; font-size:1.5rem;
+  background:var(--accent); color:#000; position:relative; box-shadow:0 0 20px var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+.play-btn.playing::before{
+  content:''; position:absolute; inset:-10px; border-radius:50%; border:2px solid var(--accent); animation:ripple 1.6s ease-out infinite;
+}
+@keyframes ripple{0%{transform:scale(.85); opacity:.8;}100%{transform:scale(1.7); opacity:0;}}
+.icon-btn{
+  width:46px; height:46px; border-radius:50%; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.04);
+  color:var(--text); cursor:pointer; font-size:1.1rem; display:flex; align-items:center; justify-content:center; transition:.2s;
+}
+.icon-btn:hover{border-color:var(--accent); color:var(--accent); box-shadow:0 0 10px var(--accent);}
+.icon-btn.fav-active{color:#ff3b5c; border-color:#ff3b5c; animation:heartBeat .5s;}
+@keyframes heartBeat{0%,100%{transform:scale(1);}50%{transform:scale(1.35);}}
+.volume-control{display:flex; align-items:center; gap:.5rem;}
+.volume-control input[type=range]{accent-color:var(--accent); width:110px;}
+.vol-tooltip{font-size:0.7rem; color:var(--muted); width:32px;}
+select, .sleep-timer select{
+  background:rgba(255,255,255,0.05); color:var(--text); border:1px solid rgba(255,255,255,0.15);
+  border-radius:12px; padding:.4rem .6rem; font-size:0.75rem;
+}
+.sleep-info{font-size:0.68rem; color:var(--accent);}
+
+/* ---------- VISUALIZER ---------- */
+.visualizer-panel{
+  background:var(--card-bg); border:1px solid rgba(255,255,255,0.08); border-radius:24px; padding:1.2rem;
+  margin-bottom:1.5rem; backdrop-filter:blur(10px);
+}
+#visualizerCanvas{width:100%; height:160px; display:block; border-radius:14px; background:rgba(0,0,0,0.25);}
+.viz-modes{display:flex; gap:.5rem; justify-content:center; margin-top:.8rem; flex-wrap:wrap;}
+.viz-modes button{
+  background:transparent; border:1px solid rgba(255,255,255,0.15); color:var(--muted); border-radius:16px;
+  padding:.35rem .8rem; font-size:0.7rem; cursor:pointer;
+}
+.viz-modes button.active{color:#000; background:var(--accent); border-color:var(--accent);}
+
+/* ---------- MANUAL META PANEL ---------- */
+.manual-meta-panel{
+  background:var(--card-bg); border:1px dashed rgba(255,255,255,0.15); border-radius:20px; padding:1rem;
+  display:none; gap:.6rem; flex-wrap:wrap; margin-bottom:1.5rem;
+}
+.manual-meta-panel.open{display:flex;}
+.manual-meta-panel input{
+  flex:1 1 150px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); color:var(--text);
+  padding:.5rem .8rem; border-radius:10px; font-size:0.8rem;
+}
+.manual-meta-panel button{
+  background:var(--accent); color:#000; border:none; padding:.5rem 1rem; border-radius:10px; font-weight:600; cursor:pointer;
+}
+
+/* ---------- DEBUG PANEL ---------- */
+.debug-panel{
+  position:fixed; bottom:10px; right:10px; width:320px; max-height:220px; overflow-y:auto;
+  background:rgba(5,7,14,0.92); border:1px solid var(--accent); border-radius:12px; padding:.7rem;
+  font-size:0.65rem; color:#9ffbe0; z-index:200; display:none; font-family:monospace;
+  box-shadow:0 0 20px rgba(0,255,242,0.2);
+}
+.debug-panel.open{display:block;}
+.debug-panel .dp-title{font-weight:700; color:var(--accent); margin-bottom:.4rem; display:flex; justify-content:space-between;}
+.debug-panel .dp-title span{cursor:pointer; color:var(--danger);}
+.debug-line{border-bottom:1px solid rgba(255,255,255,0.06); padding:2px 0; word-break:break-all;}
+.debug-toggle{
+  position:fixed; bottom:10px; right:10px; width:38px; height:38px; border-radius:50%; z-index:199;
+  background:var(--accent); color:#000; border:none; cursor:pointer; font-size:1rem;
+}
+
+/* ---------- MODALS ---------- */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:50; padding:1rem;
+}
+.modal-backdrop.open{display:flex;}
+.modal-box{
+  width:100%; max-width:420px; max-height:70vh; overflow-y:auto; background:#0c0e18; border:1px solid var(--accent);
+  border-radius:18px; padding:1.2rem; box-shadow:0 0 40px rgba(0,255,242,0.2);
+}
+.modal-box h3{font-family:'Orbitron',sans-serif; margin-bottom:1rem; color:var(--accent);}
+.modal-item{display:flex; align-items:center; gap:.7rem; padding:.5rem 0; border-bottom:1px solid rgba(255,255,255,0.06);}
+.modal-item img{width:42px; height:42px; border-radius:8px; object-fit:cover; flex-shrink:0;}
+.modal-item .mi-text{flex:1; min-width:0;}
+.modal-item .mi-title{font-size:0.85rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.modal-item .mi-artist{font-size:0.72rem; color:var(--muted);}
+.modal-close{margin-top:1rem; width:100%; padding:.6rem; border-radius:10px; border:none; background:var(--accent); color:#000; font-weight:700; cursor:pointer;}
+.empty-note{font-size:0.8rem; color:var(--muted); text-align:center; padding:1rem 0;}
+
+footer{text-align:center; font-size:0.7rem; color:var(--muted); padding:1rem 0;}
+.kbd-hint{display:flex; flex-wrap:wrap; justify-content:center; gap:.5rem; font-size:0.68rem; color:var(--muted); margin-bottom:1rem;}
+.kbd-hint span{border:1px solid rgba(255,255,255,0.15); border-radius:6px; padding:2px 6px;}
+</style>
+</head>
+<body>
+
+<canvas id="particles-bg"></canvas>
+
+<div class="app">
+  <header>
+    <div class="logo">MEKARINDAH<span>KIARA RADIO • AUDIAL</span></div>
+    <nav class="mode-switch">
+      <button data-mode="hybrid" class="active">Hybrid Studio</button>
+      <button data-mode="vinyl">Vinyl Player</button>
+      <button data-mode="audial">AUDIAL Card</button>
+    </nav>
+    <div class="palette-picker">
+      <button class="pal-cyan" data-pal="cyan" title="Cyber Cyan"></button>
+      <button class="pal-magenta" data-pal="magenta" title="Electric Magenta"></button>
+      <button class="pal-emerald" data-pal="emerald" title="Neon Emerald"></button>
+      <label><input type="checkbox" id="autoExtract" checked> Auto Cover Colors</label>
+      <button class="icon-btn" id="manualToggleBtn" title="Metadata Manual" style="width:36px;height:36px;font-size:.9rem;">⚙</button>
+    </div>
+  </header>
+
+  <div class="kbd-hint">
+    <span>Space</span> Play/Pause <span>M</span> Mute <span>↑ / ↓</span> Volume <span>F / L</span> Favorite <span>V</span> Ganti Mode
+  </div>
+
+  <div class="manual-meta-panel" id="manualPanel">
+    <input id="manualTitle" placeholder="Judul lagu/surah manual (misal: Yasin)">
+    <input id="manualArtist" placeholder="Nama artist/reciter manual (misal: Mishari)">
+    <input id="manualCover" placeholder="URL cover manual (opsional)">
+    <button id="applyManual">Terapkan</button>
+  </div>
+
+  <main class="stage mode-hybrid" id="stage">
+    <section class="vinyl-wrap">
+      <div class="turntable">
+        <div class="plinth">
+          <div class="vinyl-disc" id="vinylDisc">
+            <div class="vinyl-label"><img id="vinylCover" src="" alt="cover"></div>
+            <div class="spindle"></div>
+          </div>
+          <div class="tonearm" id="tonearm">
+            <div class="tonearm-body"></div>
+            <div class="tonearm-head"><span class="led"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="audial-card">
+      <div class="audial-frame">
+        <div class="audial-top">
+          <div class="live-badge"><span class="dot"></span> LIVE ON AIR</div>
+          <div class="conn-status" id="connStatus">Menghubungkan...</div>
+        </div>
+        <div class="cover-art"><img id="coverImg" src="" alt="cover art"></div>
+        <div class="track-info">
+          <div class="marquee-wrap"><div class="marquee" id="titleMarquee">Mekarindah — Kiara Radio</div></div>
+          <div class="marquee-wrap small"><div class="marquee" id="artistMarquee">Menunggu metadata siaran...</div></div>
+        </div>
+        <div class="badges">
+          <span class="badge" id="formatBadge">🎧 96 kbps MP3</span>
+          <a href="https://music.apple.com" id="appleMusicLink" target="_blank" rel="noopener" class="badge apple">🎵 Apple Music</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- MUROTTAL DIRECT PLAY BANNER -->
+  <div class="murottal-banner" id="murottalBanner">
+    <div class="mb-info">
+      <span class="mb-icon">🕌</span>
+      <div>
+        <div class="mb-title" id="murottalBannerTitle">Reciter terdeteksi</div>
+        <div class="mb-sub" id="murottalBannerSub">-</div>
+      </div>
+    </div>
+    <div class="mb-actions">
+      <button id="playDirectMurottalBtn">▶ Putar Ayat Ini Langsung</button>
+      <button id="backToLiveBtn">🔴 Kembali ke Live</button>
+    </div>
+  </div>
+
+  <section class="controls-panel">
+    <button class="icon-btn" id="reloadBtn" title="Muat Ulang Stream">⟳</button>
+    <button class="play-btn" id="playBtn" title="Play/Pause">▶</button>
+    <button class="icon-btn" id="favBtn" title="Sukai Lagu (F)">♡</button>
+
+    <div class="volume-control">
+      <button class="icon-btn" id="muteBtn" style="width:38px;height:38px;font-size:1rem;" title="Mute (M)">🔊</button>
+      <input type="range" id="volumeSlider" min="0" max="100" value="80">
+      <span class="vol-tooltip" id="volTooltip">80%</span>
+    </div>
+
+    <button class="icon-btn" id="historyBtn" title="Riwayat Lagu" style="width:auto;border-radius:16px;padding:0 .8rem;font-size:0.75rem;">🕓 History</button>
+    <button class="icon-btn" id="favListBtn" title="Daftar Favorit" style="width:auto;border-radius:16px;padding:0 .8rem;font-size:0.75rem;">❤ Favorit</button>
+
+    <div class="sleep-timer">
+      <select id="sleepSelect">
+        <option value="0">Sleep Timer</option>
+        <option value="15">15 menit</option>
+        <option value="30">30 menit</option>
+        <option value="45">45 menit</option>
+        <option value="60">60 menit</option>
+      </select>
+    </div>
+    <span class="sleep-info" id="sleepInfo"></span>
+  </section>
+
+  <section class="visualizer-panel">
+    <canvas id="visualizerCanvas"></canvas>
+    <div class="viz-modes">
+      <button data-viz="bars" class="active">Neon Spectrum Bars</button>
+      <button data-viz="wave">Oscilloscope Wave</button>
+      <button data-viz="circular">Radial Grooves</button>
+    </div>
+  </section>
+
+  <footer>© Mekarindah Radio Player — Modern Vinyl & AUDIAL Experience</footer>
+</div>
+
+<!-- Audio utama untuk LIVE RADIO (pakai crossorigin agar visualizer jalan) -->
+<audio id="audioPlayer" crossorigin="anonymous" preload="none"></audio>
+<!-- Audio terpisah khusus MUROTTAL DIRECT PLAY (tanpa crossorigin, anti CORS-block) -->
+<audio id="murottalAudio" preload="none"></audio>
+
+<!-- DEBUG PANEL -->
+<button class="debug-toggle" id="debugToggleBtn" title="Buka Debug Log">🐞</button>
+<div class="debug-panel" id="debugPanel">
+  <div class="dp-title">Debug Log <span id="debugClearBtn">Clear ✕</span></div>
+  <div id="debugContent"></div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-backdrop" id="historyModal">
+  <div class="modal-box">
+    <h3>🕓 Riwayat Lagu</h3>
+    <div id="historyList"><div class="empty-note">Belum ada riwayat pada sesi ini.</div></div>
+    <button class="modal-close" data-close="historyModal">Tutup</button>
+  </div>
+</div>
+<div class="modal-backdrop" id="favModal">
+  <div class="modal-box">
+    <h3>❤ Lagu Favorit</h3>
+    <div id="favList"><div class="empty-note">Belum ada lagu favorit.</div></div>
+    <button class="modal-close" data-close="favModal">Tutup</button>
+  </div>
+</div>
+
+<!-- ICY METADATA API (Fastcast4u) -->
+<span class="cc_streaminfo" data-type="song" data-username="kiarafm" id="fcast" style="display:none;"></span>
+<script src="https://eu1.fastcast4u.com/system/streaminfo.js"></script>
+
+<script>
+/* ============================================================
+   MEKARINDAH — MODERN VINYL PLAYER & AUDIAL
+   FIXED: Cover art hilang akibat rate-limit iTunes API
+   ============================================================ */
+const STREAM_URL = 'https://eu1.fastcast4u.com/proxy/kiarafm?mp=/1';
+const DEFAULT_COVER = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+<defs><radialGradient id="g" cx="50%" cy="50%" r="70%">
+<stop offset="0%" stop-color="#1a1f2e"/><stop offset="100%" stop-color="#05060a"/>
+</radialGradient></defs>
+<rect width="400" height="400" fill="url(#g)"/>
+<circle cx="200" cy="200" r="120" fill="none" stroke="#00fff2" stroke-width="3" opacity="0.5"/>
+<circle cx="200" cy="200" r="40" fill="#00fff2" opacity="0.7"/>
+<text x="200" y="360" font-family="Arial" font-size="22" fill="#00fff2" text-anchor="middle">MEKARINDAH</text>
+</svg>`);
+
+/* ---------- DOM refs (audio) ---------- */
+const audio = document.getElementById('audioPlayer');
+const murottalAudio = document.getElementById('murottalAudio');
+audio.src = STREAM_URL;
+
+let isPlaying = false;
+let audioCtx, analyser, sourceNode, dataArrayFreq, dataArrayTime, bufferLength;
+let useSimulated = false, simPhase = 0;
+let vizMode = 'bars';
+let currentMeta = {
+  artist:'', title:'', cover: DEFAULT_COVER,
+  appleUrl:'https://music.apple.com',
+  isReciter:false, source:'none'
+};
+let favorites = JSON.parse(localStorage.getItem('mekarindah_favs') || '[]');
+let historyList = [];
+let sleepTimeout = null, sleepInterval = null;
+let autoExtract = true;
+let directMurottalActive = false;
+
+/* ---------- DOM refs (UI lain) ---------- */
+const el = id => document.getElementById(id);
+const stage = el('stage');
+const vinylDisc = el('vinylDisc');
+const vinylCover = el('vinylCover');
+const tonearm = el('tonearm');
+const coverImg = el('coverImg');
+const titleMarquee = el('titleMarquee');
+const artistMarquee = el('artistMarquee');
+const appleMusicLink = el('appleMusicLink');
+const formatBadge = el('formatBadge');
+const playBtn = el('playBtn');
+const favBtn = el('favBtn');
+const muteBtn = el('muteBtn');
+const volumeSlider = el('volumeSlider');
+const volTooltip = el('volTooltip');
+const connStatus = el('connStatus');
+const sleepSelect = el('sleepSelect');
+const sleepInfo = el('sleepInfo');
+const canvas = el('visualizerCanvas');
+const ctx2d = canvas.getContext('2d');
+const murottalBanner = el('murottalBanner');
+const playDirectMurottalBtn = el('playDirectMurottalBtn');
+const backToLiveBtn = el('backToLiveBtn');
+const debugPanel = el('debugPanel');
+const debugContent = el('debugContent');
+const debugToggleBtn = el('debugToggleBtn');
+const debugClearBtn = el('debugClearBtn');
+
+coverImg.src = DEFAULT_COVER;
+vinylCover.src = DEFAULT_COVER;
+
+/* ============================================================
+   DEBUG LOGGER
+   ============================================================ */
+function dlog(msg, type='info'){
+  const time = new Date().toLocaleTimeString();
+  const color = type==='error' ? '#ff5c73' : (type==='ok' ? '#00ff9d' : '#9ffbe0');
+  const line = document.createElement('div');
+  line.className = 'debug-line';
+  line.style.color = color;
+  line.textContent = `[${time}] ${msg}`;
+  debugContent.prepend(line);
+  while(debugContent.children.length > 40) debugContent.removeChild(debugContent.lastChild);
+  console.log(`[Mekarindah] ${msg}`);
+}
+debugToggleBtn.addEventListener('click', ()=> debugPanel.classList.toggle('open'));
+debugClearBtn.addEventListener('click', ()=> debugContent.innerHTML = '');
+
+/* ============ AUDIO GRAPH ============ */
+function initAudioGraph(){
+  if(audioCtx) return;
+  try{
+    audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    sourceNode = audioCtx.createMediaElementSource(audio);
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 512;
+    bufferLength = analyser.frequencyBinCount;
+    dataArrayFreq = new Uint8Array(bufferLength);
+    dataArrayTime = new Uint8Array(bufferLength);
+    sourceNode.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    setTimeout(checkRealData, 2000);
+  }catch(e){ dlog('AudioContext gagal diinisialisasi: '+e.message, 'error'); useSimulated = true; }
+}
+function checkRealData(){
+  if(!analyser){ useSimulated = true; return; }
+  analyser.getByteFrequencyData(dataArrayFreq);
+  const sum = dataArrayFreq.reduce((a,b)=>a+b,0);
+  useSimulated = sum === 0;
+}
+
+/* ============ PLAY / PAUSE ============ */
+function getActiveAudio(){
+  return directMurottalActive ? murottalAudio : audio;
+}
+function playStream(){
+  if(directMurottalActive){
+    murottalAudio.play().then(()=>{ isPlaying = true; updatePlayUI(); dlog('Murottal dilanjutkan.', 'ok'); })
+      .catch(err=> dlog('Gagal resume murottal: '+err.message, 'error'));
+    return;
+  }
+  initAudioGraph();
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  connStatus.textContent = 'Menghubungkan...';
+  audio.play().then(()=>{
+    isPlaying = true;
+    updatePlayUI();
+    dlog('Live radio play sukses.', 'ok');
+  }).catch(err=>{
+    dlog('Gagal play live radio: '+err.message, 'error');
+    connStatus.textContent = 'Gagal terhubung';
+  });
+}
+function pauseStream(){
+  getActiveAudio().pause();
+  isPlaying = false;
+  updatePlayUI();
+}
+function togglePlay(){ isPlaying ? pauseStream() : playStream(); }
+function updatePlayUI(){
+  playBtn.textContent = isPlaying ? '❚❚' : '▶';
+  playBtn.classList.toggle('playing', isPlaying);
+  vinylDisc.classList.toggle('spinning', isPlaying);
+  tonearm.classList.toggle('active', isPlaying);
+}
+
+audio.addEventListener('waiting', ()=> connStatus.textContent = 'Buffering...');
+audio.addEventListener('playing', ()=>{ if(!directMurottalActive) connStatus.textContent = 'LIVE • Tersambung'; });
+audio.addEventListener('stalled', ()=>{ if(!directMurottalActive) connStatus.textContent = 'Koneksi terputus'; });
+audio.addEventListener('error', ()=>{ if(!directMurottalActive) connStatus.textContent = 'Error stream'; });
+
+playBtn.addEventListener('click', togglePlay);
+el('reloadBtn').addEventListener('click', ()=>{
+  const wasPlaying = isPlaying;
+  if(directMurottalActive) returnToLiveStream();
+  audio.pause();
+  audio.src = STREAM_URL + (STREAM_URL.includes('?') ? '&' : '?') + '_r=' + Date.now();
+  audio.load();
+  if(wasPlaying) playStream();
+  dlog('Stream live di-reload.');
+});
+
+/* ============ VOLUME ============ */
+audio.volume = 0.8;
+murottalAudio.volume = 0.8;
+volumeSlider.addEventListener('input', ()=>{
+  const v = volumeSlider.value;
+  audio.volume = v/100;
+  murottalAudio.volume = v/100;
+  audio.muted = false;
+  murottalAudio.muted = false;
+  volTooltip.textContent = v + '%';
+  updateVolIcon();
+});
+function changeVolume(delta){
+  let v = Math.min(100, Math.max(0, parseInt(volumeSlider.value)+delta));
+  volumeSlider.value = v;
+  volumeSlider.dispatchEvent(new Event('input'));
+}
+function updateVolIcon(){
+  const v = parseInt(volumeSlider.value);
+  muteBtn.textContent = audio.muted || v===0 ? '🔇' : (v<50 ? '🔉' : '🔊');
+}
+muteBtn.addEventListener('click', toggleMute);
+function toggleMute(){
+  const newMuted = !audio.muted;
+  audio.muted = newMuted;
+  murottalAudio.muted = newMuted;
+  updateVolIcon();
+}
+
+/* ============ METADATA (ICY via Fastcast4u) ============ */
+const fcastEl = el('fcast');
+let lastRaw = '';
+function pollMetadata(){
+  const raw = (fcastEl.textContent || '').trim();
+  if(raw && raw !== lastRaw){
+    lastRaw = raw;
+    handleNewTrack(raw);
+  }
+}
+setInterval(pollMetadata, 4000);
+new MutationObserver(pollMetadata).observe(fcastEl, {childList:true, characterData:true, subtree:true});
+
+function handleNewTrack(raw){
+  let artist = 'Kiara Radio', title = raw;
+  if(raw.includes(' - ')){
+    const parts = raw.split(' - ');
+    artist = parts[0].trim();
+    title = parts.slice(1).join(' - ').trim();
+  }
+  currentMeta.artist = artist;
+  currentMeta.title = title;
+  updateMetaUI();
+  fetchCoverArt(artist, title);
+}
+
+function updateMetaUI(){
+  setMarquee(titleMarquee, currentMeta.title || 'Mekarindah — Kiara Radio');
+  setMarquee(artistMarquee, currentMeta.artist || 'Kiara Radio');
+}
+
+function setMarquee(elm, text){
+  elm.textContent = text;
+  elm.style.animation = 'none';
+  elm.style.transform = 'translateX(0)';
+  requestAnimationFrame(()=>{
+    const wrap = elm.parentElement;
+    const overflow = elm.scrollWidth - wrap.clientWidth;
+    if(overflow > 10){
+      const duration = Math.max(6, elm.scrollWidth/45);
+      elm.animate(
+        [{transform:'translateX(0)'},{transform:`translateX(-${overflow+20}px)`}],
+        {duration:duration*1000, iterations:Infinity, direction:'alternate', easing:'linear'}
+      );
+    }
+  });
+}
+
+/* ============================================================
+   RECITER / MUROTTAL INTELLIGENCE
+   ============================================================ */
+const RECITER_ALIASES = {
+  'mishari': 'Mishary Rashid Alafasy',
+  'mishary': 'Mishary Rashid Alafasy',
+  'al afasy': 'Mishary Rashid Alafasy',
+  'al-afasy': 'Mishary Rashid Alafasy',
+  'alafasy': 'Mishary Rashid Alafasy',
+  'sheikh mishari': 'Mishary Rashid Alafasy',
+  'sudais': 'Abdul Rahman Al-Sudais',
+  'al sudais': 'Abdul Rahman Al-Sudais',
+  'al-sudais': 'Abdul Rahman Al-Sudais',
+  'ghamdi': 'Saad Al Ghamdi',
+  'al ghamdi': 'Saad Al Ghamdi',
+  'al-ghamdi': 'Saad Al Ghamdi',
+  'shuraim': 'Saud Al-Shuraim',
+  'al shuraim': 'Saud Al-Shuraim',
+  'husary': 'Mahmoud Khalil Al-Hussary',
+  'al husary': 'Mahmoud Khalil Al-Hussary',
+  'minshawi': 'Mohamed Siddiq El-Minshawi',
+  'al minshawi': 'Mohamed Siddiq El-Minshawi',
+  'abdul basit': 'Abdul Basit Abdul Samad',
+  'abdulbasit': 'Abdul Basit Abdul Samad',
+  'yasser dosari': 'Yasser Al-Dosari',
+  'al dosari': 'Yasser Al-Dosari',
+  'maher al muaiqly': 'Maher Al Muaiqly',
+  'maher muaiqly': 'Maher Al Muaiqly',
+  'muaiqly': 'Maher Al Muaiqly',
+  'ali jaber': 'Ali Jaber',
+  'nasser al qatami': 'Nasser Al Qatami',
+  'qatami': 'Nasser Al Qatami',
+  'idris abkar': 'Idris Abkar',
+  'bandar baleela': 'Bandar Baleela',
+  'khalifa al tunaiji': 'Khalifa Al Tunaiji'
+};
+
+const RECITER_AUDIO_MAP = {
+  'Mishary Rashid Alafasy': 'ar.alafasy',
+  'Abdul Rahman Al-Sudais': 'ar.abdurrahmaansudais',
+  'Saud Al-Shuraim': 'ar.saoodshuraym',
+  'Mahmoud Khalil Al-Hussary': 'ar.husary',
+  'Mohamed Siddiq El-Minshawi': 'ar.minshawi',
+  'Abdul Basit Abdul Samad': 'ar.abdulbasitmurattal',
+  'Maher Al Muaiqly': 'ar.mahermuaiqly'
+};
+
+function detectReciter(rawArtist){
+  if(!rawArtist) return { name: rawArtist, isReciter:false };
+  const lower = rawArtist.toLowerCase().trim();
+  for(const key in RECITER_ALIASES){
+    if(lower.includes(key)){
+      return { name: RECITER_ALIASES[key], isReciter:true };
+    }
+  }
+  return { name: rawArtist, isReciter:false };
+}
+
+function buildQuranFallbackUrl(artistRaw, titleRaw){
+  const query = encodeURIComponent(`${artistRaw} ${titleRaw}`.trim());
+  return `https://quran.com/search?query=${query}`;
+}
+
+const SURAH_MAP = {
+  alfatihah:1, albaqarah:2, aliimran:3, alimran:3, annisa:4, annisaa:4,
+  almaidah:5, alanam:6, alaraf:7, alanfal:8, attaubah:9, attawbah:9, albaraah:9,
+  yunus:10, hud:11, yusuf:12, arrad:13, ibrahim:14, alhijr:15, annahl:16,
+  alisra:17, alisraa:17, baniisrail:17, alkahf:18, alkahfi:18, maryam:19, taha:20,
+  alanbiya:21, alanbiyaa:21, alhajj:22, almuminun:23, almukminun:23, annur:24,
+  alfurqan:25, assyuara:26, ashshuara:26, annaml:27, alqasas:28, alankabut:29,
+  arrum:30, luqman:31, assajdah:32, alahzab:33, saba:34, sabaa:34, fatir:35,
+  yasin:36, yaasiin:36, assaffat:37, sad:38, shad:38, azzumar:39, ghafir:40,
+  almumin:40, fussilat:41, hamimsajdah:41, asysyura:42, ashshura:42, azzukhruf:43,
+  addukhan:44, aljathiyah:45, aljasiyah:45, alahqaf:46, muhammad:47, alfath:48,
+  alhujurat:49, qaf:50, adzariyat:51, adhdhariyat:51, attur:52, annajm:53,
+  alqamar:54, arrahman:55, alwaqiah:56, alhadid:57, almujadilah:58, alhasyr:59,
+  alhashr:59, almumtahanah:60, assaf:61, ashshaff:61, aljumuah:62, almunafiqun:63,
+  attaghabun:64, attalaq:65, attahrim:66, almulk:67, alqalam:68, alhaqqah:69,
+  almaarij:70, nuh:71, aljinn:72, almuzzammil:73, almuddaththir:74, almuddatstsir:74,
+  alqiyamah:75, alinsan:76, addahr:76, almursalat:77, annaba:78, annaziat:79,
+  abasa:80, attakwir:81, alinfitar:82, almutaffifin:83, alinsyiqaq:84, alinshiqaq:84,
+  alburuj:85, attariq:86, alaala:87, alghasyiyah:88, alghashiyah:88, alfajr:89,
+  albalad:90, asysyams:91, ashshams:91, allail:92, allayl:92, adhdhuha:93,
+  asysyarh:94, alinsyirah:94, attin:95, alalaq:96, alqadr:97, albayyinah:98,
+  azzalzalah:99, aladiyat:100, alqariah:101, attakatsur:102, attakathur:102,
+  alasr:103, alhumazah:104, alfil:105, quraisy:106, quraysh:106, almaun:107,
+  alkautsar:108, alkawthar:108, alkafirun:109, annasr:110, almasad:111,
+  allahab:111, alikhlas:112, alfalaq:113, annas:114
+};
+
+function normalizeText(s){
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'');
+}
+function detectSurahNumber(title){
+  if(!title) return null;
+  const numMatch = title.match(/\b(?:surah|surat|qs\.?|q\.s\.?)\s*(\d{1,3})\b/i);
+  if(numMatch){
+    const n = parseInt(numMatch[1]);
+    if(n>=1 && n<=114) return n;
+  }
+  const words = title.toLowerCase().replace(/[^\w\s]/g,' ').split(/\s+/).filter(Boolean);
+  for(let winSize=3; winSize>=1; winSize--){
+    for(let i=0;i<=words.length-winSize;i++){
+      const combo = normalizeText(words.slice(i,i+winSize).join(''));
+      if(SURAH_MAP[combo]) return SURAH_MAP[combo];
+    }
+  }
+  return null;
+}
+
+/* ---------- Cover Cache (localStorage) ---------- */
+function getCoverCache(){
+  try{ return JSON.parse(localStorage.getItem('mekarindah_coverCache') || '{}'); }
+  catch(e){ return {}; }
+}
+function getCachedCover(key){
+  const cache = getCoverCache();
+  return cache[key] || null;
+}
+function setCachedCover(key, data){
+  const cache = getCoverCache();
+  cache[key] = data;
+  const keys = Object.keys(cache);
+  if(keys.length > 300){ delete cache[keys[0]]; }
+  localStorage.setItem('mekarindah_coverCache', JSON.stringify(cache));
+}
+function forceHttps(url){
+  if(!url) return url;
+  return url.replace(/^http:\/\//i, 'https://');
+}
+
+/* ============================================================
+   ⭐ FIX UTAMA: Throttle Queue anti Rate-Limit iTunes
+   Semua request iTunes wajib lewat sini, otomatis dikasih jeda
+   ============================================================ */
+let itunesQueueTail = Promise.resolve();
+const ITUNES_THROTTLE_MS = 600; // jeda antar-request iTunes
+
+function throttledItunesFetch(url){
+  const run = () => fetch(url)
+    .then(res => new Promise(resolve => setTimeout(()=>resolve(res), ITUNES_THROTTLE_MS)))
+    .catch(err => new Promise(resolve => setTimeout(()=>resolve({ ok:false, status:0, _err:err }), ITUNES_THROTTLE_MS)));
+  itunesQueueTail = itunesQueueTail.then(run, run);
+  return itunesQueueTail;
+}
+
+/* ============================================================
+   ⭐ FIX UTAMA: Strategi pencarian dibedakan
+   - Lagu biasa (bukan reciter) → HEMAT: maks 2 percobaan (seperti versi awal yang "bagus")
+   - Reciter/murottal → LENGKAP: 6 percobaan (butuh pencarian lebih dalam)
+   ============================================================ */
+async function fetchCoverArt(artistRaw, titleRaw){
+  const title = (titleRaw || '').trim();
+  const { name: artist, isReciter } = detectReciter(artistRaw);
+  currentMeta.isReciter = isReciter;
+
+  const cacheKey = `${artist}|${title}`.toLowerCase();
+  const cached = getCachedCover(cacheKey);
+  if(cached){
+    currentMeta.cover = forceHttps(cached.cover);
+    currentMeta.appleUrl = cached.appleUrl;
+    currentMeta.source = cached.source;
+    finalizeCoverUpdate();
+    dlog('Cover diambil dari cache: '+cacheKey);
+    return;
+  }
+
+  // ⭐ Strategi HEMAT untuk lagu biasa, LENGKAP untuk reciter
+  const strategies = isReciter ? [
+    { term: `${artist} ${title}`, entity: 'song' },
+    { term: `${artist} ${title}`, entity: 'album' },
+    { term: `${artist} ${title}`, entity: 'podcast' },
+    { term: `${artist} ${title}`, entity: 'audiobook' },
+    { term: `${title}`, entity: 'song' },
+    { term: `${artist}`, entity: 'musicArtist' }
+  ] : [
+    { term: `${artist} ${title}`, entity: 'song' },
+    { term: `${title}`, entity: 'song' }
+  ];
+
+  for(const strat of strategies){
+    if(!strat.term.trim()) continue;
+    try{
+      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(strat.term)}&entity=${strat.entity}&limit=1`;
+      const res = await throttledItunesFetch(url);
+
+      // ⭐ Kalau kena rate-limit, langsung berhenti (jangan buang kuota lagi)
+      if(res.status === 403 || res.status === 429){
+        dlog(`iTunes rate-limit terdeteksi (status ${res.status}). Berhenti mencoba strategi lain.`, 'error');
+        break;
+      }
+      if(!res.ok) continue;
+
+      const data = await res.json();
+      if(data.results && data.results.length){
+        const item = data.results[0];
+        const rawArt = item.artworkUrl100 || item.artworkUrl60;
+        if(rawArt){
+          currentMeta.cover = forceHttps(rawArt.replace(/\d+x\d+bb/, '600x600bb'));
+          currentMeta.appleUrl = item.trackViewUrl || item.collectionViewUrl || item.artistViewUrl || 'https://music.apple.com';
+          currentMeta.source = 'apple';
+          setCachedCover(cacheKey, {
+            cover: currentMeta.cover, appleUrl: currentMeta.appleUrl, source: 'apple'
+          });
+          finalizeCoverUpdate();
+          dlog('Cover ditemukan via iTunes ('+strat.entity+').', 'ok');
+          return;
+        }
+      }
+    }catch(e){
+      dlog(`Strategi "${strat.entity}" gagal: ${e.message}`, 'error');
+    }
+  }
+
+  if(isReciter){
+    currentMeta.cover = DEFAULT_COVER;
+    currentMeta.appleUrl = buildQuranFallbackUrl(artistRaw, titleRaw);
+    currentMeta.source = 'quran-fallback';
+  }else{
+    currentMeta.cover = DEFAULT_COVER;
+    currentMeta.appleUrl = 'https://music.apple.com';
+    currentMeta.source = 'none';
+  }
+  setCachedCover(cacheKey, {
+    cover: currentMeta.cover, appleUrl: currentMeta.appleUrl, source: currentMeta.source
+  });
+  finalizeCoverUpdate();
+  dlog('Semua strategi cover gagal, pakai fallback.', 'error');
+}
+
+function finalizeCoverUpdate(){
+  applyCoverToUI();
+  updateBadges();
+  updateMurottalBanner();
+  addToHistory();
+  if(autoExtract) extractColorsFromImage(currentMeta.cover);
+}
+
+function applyCoverToUI(){
+  coverImg.referrerPolicy = 'no-referrer';
+  vinylCover.referrerPolicy = 'no-referrer';
+  coverImg.src = currentMeta.cover;
+  vinylCover.src = currentMeta.cover;
+  updateFavButtonState();
+}
+
+function updateBadges(){
+  if(currentMeta.isReciter){
+    formatBadge.textContent = "🕌 Murottal Qur'an";
+    formatBadge.classList.add('quran');
+  }else{
+    formatBadge.textContent = '🎧 96 kbps MP3';
+    formatBadge.classList.remove('quran');
+  }
+  if(currentMeta.source === 'apple'){
+    appleMusicLink.textContent = '🎵 Apple Music';
+    appleMusicLink.href = currentMeta.appleUrl;
+    appleMusicLink.classList.remove('quran-link');
+    appleMusicLink.classList.add('apple');
+  }else if(currentMeta.source === 'quran-fallback'){
+    appleMusicLink.textContent = '📖 Dengar di Quran.com';
+    appleMusicLink.href = currentMeta.appleUrl;
+    appleMusicLink.classList.remove('apple');
+    appleMusicLink.classList.add('quran-link');
+  }else{
+    appleMusicLink.textContent = '🎵 Apple Music';
+    appleMusicLink.href = 'https://music.apple.com';
+    appleMusicLink.classList.add('apple');
+    appleMusicLink.classList.remove('quran-link');
+  }
+}
+
+/* ============================================================
+   DIRECT MUROTTAL PLAYBACK
+   ============================================================ */
+function updateMurottalBanner(){
+  if(!currentMeta.isReciter){
+    murottalBanner.style.display = 'none';
+    return;
+  }
+  const { name: reciterKey } = detectReciter(currentMeta.artist);
+  const audioId = RECITER_AUDIO_MAP[reciterKey];
+  const surahNum = detectSurahNumber(currentMeta.title);
+
+  murottalBanner.style.display = 'flex';
+  el('murottalBannerTitle').textContent = surahNum
+    ? `Surah #${surahNum} terdeteksi`
+    : 'Reciter terdeteksi, surah belum teridentifikasi';
+  el('murottalBannerSub').textContent = `${reciterKey}` +
+    (audioId
+      ? (surahNum ? ' • Siap diputar langsung dari CDN Al-Quran Cloud' : ' • Judul metadata tidak menyebut nama surah dengan jelas')
+      : ' • Reciter ini belum didukung untuk direct-play (gunakan link Quran.com)');
+
+  if(audioId && surahNum && !directMurottalActive){
+    playDirectMurottalBtn.disabled = false;
+    playDirectMurottalBtn.textContent = '▶ Putar Ayat Ini Langsung';
+    playDirectMurottalBtn.dataset.audioId = audioId;
+    playDirectMurottalBtn.dataset.surah = surahNum;
+    playDirectMurottalBtn.style.display = 'inline-flex';
+    backToLiveBtn.style.display = 'none';
+  }else if(!directMurottalActive){
+    playDirectMurottalBtn.disabled = true;
+    playDirectMurottalBtn.textContent = audioId ? '⚠ Surah tidak terdeteksi' : '⚠ Reciter belum didukung';
+    playDirectMurottalBtn.style.display = 'inline-flex';
+    backToLiveBtn.style.display = 'none';
+  }
+}
+
+const FALLBACK_BITRATES = [128, 64, 192, 32];
+async function tryPlayMurottal(audioId, surah, bitrateIndex = 0){
+  if(bitrateIndex >= FALLBACK_BITRATES.length){
+    connStatus.textContent = 'Semua percobaan gagal';
+    dlog(`Semua bitrate gagal untuk ${audioId} surah ${surah}`, 'error');
+    alert('Gagal memutar murottal setelah mencoba semua kualitas audio.\n\nSilakan cek koneksi internet, atau gunakan tombol "📖 Dengar di Quran.com" sebagai alternatif.');
+    resetMurottalButtons();
+    return;
+  }
+  const bitrate = FALLBACK_BITRATES[bitrateIndex];
+  const directUrl = `https://cdn.islamic.network/quran/audio-surah/${bitrate}/${audioId}/${surah}.mp3`;
+  dlog(`Mencoba play (bitrate ${bitrate}kbps): ${directUrl}`);
+
+  audio.pause();
+  murottalAudio.src = directUrl;
+  murottalAudio.volume = audio.muted ? 0 : (parseInt(volumeSlider.value)/100);
+  murottalAudio.load();
+
+  try{
+    await murottalAudio.play();
+    isPlaying = true;
+    directMurottalActive = true;
+    updatePlayUI();
+    connStatus.textContent = `🕌 Memutar Murottal Langsung (${bitrate}kbps)`;
+    playDirectMurottalBtn.style.display = 'none';
+    backToLiveBtn.style.display = 'inline-flex';
+    dlog(`✅ Berhasil play: ${directUrl}`, 'ok');
+  }catch(err){
+    dlog(`❌ Gagal di bitrate ${bitrate}kbps: ${err.name} — ${err.message}`, 'error');
+    tryPlayMurottal(audioId, surah, bitrateIndex + 1);
+  }
+}
+function resetMurottalButtons(){
+  directMurottalActive = false;
+  playDirectMurottalBtn.style.display = 'inline-flex';
+  playDirectMurottalBtn.disabled = false;
+  playDirectMurottalBtn.textContent = '▶ Putar Ayat Ini Langsung';
+  backToLiveBtn.style.display = 'none';
+}
+playDirectMurottalBtn.addEventListener('click', function(){
+  if(this.disabled) return;
+  const audioId = this.dataset.audioId;
+  const surah = this.dataset.surah;
+  if(!audioId || !surah){ dlog('Data audioId/surah tidak lengkap.', 'error'); return; }
+  playDirectMurottalBtn.textContent = '⏳ Memuat...';
+  playDirectMurottalBtn.disabled = true;
+  tryPlayMurottal(audioId, surah, 0);
+});
+backToLiveBtn.addEventListener('click', returnToLiveStream);
+murottalAudio.addEventListener('ended', ()=>{ if(directMurottalActive){ dlog('Murottal selesai, kembali ke live.'); returnToLiveStream(); } });
+murottalAudio.addEventListener('error', ()=>{
+  const errCode = murottalAudio.error ? murottalAudio.error.code : 'unknown';
+  dlog(`Error pada elemen murottalAudio (code: ${errCode})`, 'error');
+});
+function returnToLiveStream(){
+  murottalAudio.pause();
+  murottalAudio.removeAttribute('src');
+  murottalAudio.load();
+  directMurottalActive = false;
+  resetMurottalButtons();
+  updateMurottalBanner();
+  audio.src = STREAM_URL;
+  audio.load();
+  playStream();
+}
+
+/* ---------- Auto Cover Color Extraction ---------- */
+function extractColorsFromImage(url){
+  const img = new Image();
+  img.crossOrigin = 'Anonymous';
+  img.referrerPolicy = 'no-referrer';
+  img.onload = ()=>{
+    try{
+      const c = document.createElement('canvas');
+      c.width = c.height = 32;
+      const cx = c.getContext('2d');
+      cx.drawImage(img,0,0,32,32);
+      const data = cx.getImageData(0,0,32,32).data;
+      let r=0,g=0,b=0,count=0;
+      for(let i=0;i<data.length;i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; count++; }
+      r=Math.round(r/count); g=Math.round(g/count); b=Math.round(b/count);
+      applyPaletteRGB(r,g,b);
+    }catch(e){ /* CORS blocked, biarkan warna default */ }
+  };
+  img.onerror = ()=> dlog('Gagal load gambar untuk ekstraksi warna.', 'error');
+  img.src = url;
+}
+function applyPaletteRGB(r,g,b){
+  const accent = `rgb(${r},${g},${b})`;
+  const accent2 = `rgb(${Math.min(255,r+70)},${Math.min(255,g+70)},${Math.min(255,b+70)})`;
+  document.documentElement.style.setProperty('--accent', accent);
+  document.documentElement.style.setProperty('--accent2', accent2);
+}
+
+/* ---------- Quick Palette Presets ---------- */
+const palettes = {
+  cyan:['#00fff2','#0077ff'],
+  magenta:['#ff00e0','#ff0077'],
+  emerald:['#00ff9d','#00c9a7']
+};
+document.querySelectorAll('[data-pal]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const [a1,a2] = palettes[btn.dataset.pal];
+    document.documentElement.style.setProperty('--accent', a1);
+    document.documentElement.style.setProperty('--accent2', a2);
+  });
+});
+el('autoExtract').addEventListener('change', e=> autoExtract = e.target.checked);
+
+/* ---------- Manual Metadata Panel ---------- */
+el('manualToggleBtn').addEventListener('click', ()=> el('manualPanel').classList.toggle('open'));
+el('applyManual').addEventListener('click', ()=>{
+  const t = el('manualTitle').value.trim();
+  const a = el('manualArtist').value.trim();
+  const c = el('manualCover').value.trim();
+  if(t) currentMeta.title = t;
+  if(a) currentMeta.artist = a;
+  updateMetaUI();
+
+  const { isReciter } = detectReciter(currentMeta.artist);
+  currentMeta.isReciter = isReciter;
+
+  if(c){
+    currentMeta.cover = c;
+    currentMeta.source = 'manual';
+    applyCoverToUI();
+    updateBadges();
+    updateMurottalBanner();
+    addToHistory();
+    if(autoExtract) extractColorsFromImage(c);
+  }else{
+    fetchCoverArt(currentMeta.artist, currentMeta.title);
+  }
+});
+
+/* ============ FAVORITES ============ */
+function trackKey(){ return `${currentMeta.artist} - ${currentMeta.title}`; }
+function isFavorite(){ return favorites.some(f=>f.key === trackKey()); }
+function updateFavButtonState(){
+  favBtn.textContent = isFavorite() ? '❤' : '♡';
+  favBtn.classList.toggle('fav-active', isFavorite());
+}
+function toggleFavorite(){
+  if(!currentMeta.title) return;
+  const key = trackKey();
+  const idx = favorites.findIndex(f=>f.key===key);
+  if(idx>=0){ favorites.splice(idx,1); }
+  else{
+    favorites.unshift({key, artist:currentMeta.artist, title:currentMeta.title, cover:currentMeta.cover, time:Date.now()});
+  }
+  localStorage.setItem('mekarindah_favs', JSON.stringify(favorites));
+  updateFavButtonState();
+  renderFavList();
+}
+favBtn.addEventListener('click', toggleFavorite);
+function renderFavList(){
+  const box = el('favList');
+  if(!favorites.length){ box.innerHTML = '<div class="empty-note">Belum ada lagu favorit.</div>'; return; }
+  box.innerHTML = favorites.map(f=>`
+    <div class="modal-item">
+      <img src="${f.cover}" alt="">
+      <div class="mi-text">
+        <div class="mi-title">${f.title}</div>
+        <div class="mi-artist">${f.artist}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ============ HISTORY ============ */
+function addToHistory(){
+  if(!currentMeta.title) return;
+  historyList.unshift({...currentMeta, time:new Date()});
+  if(historyList.length>60) historyList.pop();
+  renderHistoryList();
+}
+function renderHistoryList(){
+  const box = el('historyList');
+  if(!historyList.length){ box.innerHTML = '<div class="empty-note">Belum ada riwayat pada sesi ini.</div>'; return; }
+  box.innerHTML = historyList.map(h=>`
+    <div class="modal-item">
+      <img src="${h.cover}" alt="">
+      <div class="mi-text">
+        <div class="mi-title">${h.title}</div>
+        <div class="mi-artist">${h.artist} • ${h.time.toLocaleTimeString()}</div>
+      </div>
+    </div>`).join('');
+}
+
+/* ============ MODALS ============ */
+function openModal(id){ el(id).classList.add('open'); }
+function closeModal(id){ el(id).classList.remove('open'); }
+el('historyBtn').addEventListener('click', ()=>{ renderHistoryList(); openModal('historyModal'); });
+el('favListBtn').addEventListener('click', ()=>{ renderFavList(); openModal('favModal'); });
+document.querySelectorAll('[data-close]').forEach(b=> b.addEventListener('click', ()=> closeModal(b.dataset.close)));
+document.querySelectorAll('.modal-backdrop').forEach(m=>{
+  m.addEventListener('click', e=>{ if(e.target === m) m.classList.remove('open'); });
+});
+
+/* ============ SLEEP TIMER ============ */
+sleepSelect.addEventListener('change', ()=>{
+  clearTimeout(sleepTimeout); clearInterval(sleepInterval);
+  const mins = parseInt(sleepSelect.value);
+  if(!mins){ sleepInfo.textContent=''; return; }
+  let remaining = mins*60;
+  sleepInfo.textContent = `Berhenti dalam ${mins}:00`;
+  sleepInterval = setInterval(()=>{
+    remaining--;
+    const m = Math.floor(remaining/60), s = remaining%60;
+    sleepInfo.textContent = `Berhenti dalam ${m}:${s.toString().padStart(2,'0')}`;
+    if(remaining<=0) clearInterval(sleepInterval);
+  },1000);
+  sleepTimeout = setTimeout(()=>{
+    pauseStream();
+    sleepInfo.textContent = 'Sleep timer selesai';
+    sleepSelect.value = '0';
+  }, mins*60*1000);
+});
+
+/* ============ MODE SWITCH ============ */
+document.querySelectorAll('.mode-switch button').forEach(btn=>{
+  btn.addEventListener('click', ()=> setMode(btn.dataset.mode));
+});
+function setMode(mode){
+  stage.classList.remove('mode-hybrid','mode-vinyl','mode-audial');
+  stage.classList.add('mode-'+mode);
+  document.querySelectorAll('.mode-switch button').forEach(b=> b.classList.toggle('active', b.dataset.mode===mode));
+}
+const modeOrder = ['hybrid','vinyl','audial'];
+function cycleMode(){
+  const current = modeOrder.find(m=> stage.classList.contains('mode-'+m));
+  const next = modeOrder[(modeOrder.indexOf(current)+1)%modeOrder.length];
+  setMode(next);
+}
+
+/* ============ KEYBOARD SHORTCUTS ============ */
+document.addEventListener('keydown', e=>{
+  if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName)) return;
+  switch(e.code){
+    case 'Space': e.preventDefault(); togglePlay(); break;
+    case 'KeyM': toggleMute(); break;
+    case 'ArrowUp': e.preventDefault(); changeVolume(5); break;
+    case 'ArrowDown': e.preventDefault(); changeVolume(-5); break;
+    case 'KeyF': case 'KeyL': toggleFavorite(); break;
+    case 'KeyV': cycleMode(); break;
+  }
+});
+
+/* ============ VISUALIZER ============ */
+document.querySelectorAll('.viz-modes button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    vizMode = btn.dataset.viz;
+    document.querySelectorAll('.viz-modes button').forEach(b=>b.classList.toggle('active', b===btn));
+  });
+});
+function resizeCanvas(){
+  canvas.width = canvas.clientWidth * devicePixelRatio;
+  canvas.height = canvas.clientHeight * devicePixelRatio;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+function getAccentColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00fff2'; }
+function getAccent2Color(){ return getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#0077ff'; }
+function generateSimulatedData(len){
+  const arr = new Uint8Array(len);
+  simPhase += isPlaying ? 0.12 : 0.02;
+  for(let i=0;i<len;i++){
+    const base = isPlaying ? 90 : 8;
+    const wave = Math.sin(simPhase + i*0.35) * (isPlaying?70:5);
+    const noise = Math.random()* (isPlaying?40:5);
+    arr[i] = Math.max(0, Math.min(255, base+wave+noise));
+  }
+  return arr;
+}
+function drawBars(data, w, h){
+  const accent = getAccentColor(), accent2 = getAccent2Color();
+  const barCount = 56;
+  const step = Math.floor(data.length/barCount) || 1;
+  const gap = 3;
+  const barWidth = w/barCount - gap;
+  for(let i=0;i<barCount;i++){
+    const val = data[i*step]/255;
+    const barHeight = val*h*0.9;
+    const x = i*(barWidth+gap);
+    const y = h-barHeight;
+    const grad = ctx2d.createLinearGradient(0,y,0,h);
+    grad.addColorStop(0, accent);
+    grad.addColorStop(1, accent2);
+    ctx2d.fillStyle = grad;
+    ctx2d.fillRect(x,y,barWidth,barHeight);
+    ctx2d.fillStyle = '#ffffff';
+    ctx2d.fillRect(x,Math.max(0,y-3),barWidth,2);
+  }
+}
+function drawWave(data, w, h){
+  const accent = getAccentColor();
+  ctx2d.lineWidth = 2.5;
+  ctx2d.strokeStyle = accent;
+  ctx2d.shadowBlur = 18;
+  ctx2d.shadowColor = accent;
+  ctx2d.beginPath();
+  const slice = w/data.length;
+  for(let i=0;i<data.length;i++){
+    const v = data[i]/128 - 1;
+    const y = h/2 + v*h/2*0.85;
+    const x = i*slice;
+    i===0 ? ctx2d.moveTo(x,y) : ctx2d.lineTo(x,y);
+  }
+  ctx2d.stroke();
+  ctx2d.shadowBlur = 0;
+}
+function drawCircular(data, w, h){
+  const accent = getAccentColor();
+  const cx=w/2, cy=h/2, baseR=Math.min(w,h)/5;
+  const barCount=80;
+  const step = Math.floor(data.length/barCount) || 1;
+  ctx2d.strokeStyle = accent;
+  ctx2d.lineWidth = 2;
+  ctx2d.shadowBlur = 10; ctx2d.shadowColor = accent;
+  for(let i=0;i<barCount;i++){
+    const val = data[i*step]/255;
+    const angle = (i/barCount)*Math.PI*2;
+    const r1 = baseR, r2 = baseR + val*baseR*1.1;
+    const x1=cx+Math.cos(angle)*r1, y1=cy+Math.sin(angle)*r1;
+    const x2=cx+Math.cos(angle)*r2, y2=cy+Math.sin(angle)*r2;
+    ctx2d.beginPath();
+    ctx2d.moveTo(x1,y1); ctx2d.lineTo(x2,y2);
+    ctx2d.stroke();
+  }
+  ctx2d.shadowBlur = 0;
+}
+function vizLoop(){
+  requestAnimationFrame(vizLoop);
+  const w = canvas.width, h = canvas.height;
+  ctx2d.clearRect(0,0,w,h);
+  let freqData, timeData;
+  if(analyser && !useSimulated && !directMurottalActive){
+    analyser.getByteFrequencyData(dataArrayFreq);
+    analyser.getByteTimeDomainData(dataArrayTime);
+    freqData = dataArrayFreq; timeData = dataArrayTime;
+  }else{
+    freqData = generateSimulatedData(64);
+    timeData = generateSimulatedData(128).map(v=>128+(v-64));
+  }
+  if(vizMode==='bars') drawBars(freqData, w, h);
+  else if(vizMode==='wave') drawWave(timeData, w, h);
+  else drawCircular(freqData, w, h);
+}
+vizLoop();
+
+/* ============ PARTICLES BACKGROUND ============ */
+const pCanvas = document.getElementById('particles-bg');
+const pctx = pCanvas.getContext('2d');
+let particles = [];
+function resizeParticles(){ pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeParticles);
+resizeParticles();
+function initParticles(){
+  particles = [];
+  const count = Math.floor((pCanvas.width*pCanvas.height)/16000);
+  for(let i=0;i<count;i++){
+    particles.push({
+      x: Math.random()*pCanvas.width, y: Math.random()*pCanvas.height,
+      vx: (Math.random()-0.5)*0.3, vy: (Math.random()-0.5)*0.3, r: Math.random()*1.8+0.6
+    });
+  }
+}
+initParticles();
+function particleLoop(){
+  requestAnimationFrame(particleLoop);
+  pctx.clearRect(0,0,pCanvas.width,pCanvas.height);
+  const speedMult = isPlaying ? 1.6 : 0.5;
+  const accent = getAccentColor();
+  pctx.fillStyle = accent;
+  pctx.strokeStyle = accent;
+  particles.forEach(p=>{
+    p.x += p.vx*speedMult; p.y += p.vy*speedMult;
+    if(p.x<0||p.x>pCanvas.width) p.vx*=-1;
+    if(p.y<0||p.y>pCanvas.height) p.vy*=-1;
+    pctx.globalAlpha = isPlaying ? 0.85 : 0.35;
+    pctx.beginPath(); pctx.arc(p.x,p.y,p.r,0,Math.PI*2); pctx.fill();
+  });
+  pctx.globalAlpha = isPlaying ? 0.12 : 0.05;
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x, dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<110){
+        pctx.beginPath(); pctx.moveTo(particles[i].x,particles[i].y); pctx.lineTo(particles[j].x,particles[j].y); pctx.stroke();
+      }
+    }
+  }
+  pctx.globalAlpha = 1;
+}
+particleLoop();
+
+/* ============ INIT ============ */
+updateMetaUI();
+updateVolIcon();
+updateBadges();
+renderFavList();
+renderHistoryList();
+dlog('Mekarindah player siap. Cover art sekarang hemat kuota iTunes (anti rate-limit).');
+</script>
+</body>
+</html>
